@@ -1,4 +1,10 @@
 {
+  "imports": {
+    "deno_std/": "https://deno.land/std@0.212.0/",
+    "cliffy/": "https://deno.land/x/cliffy@v1.0.0-rc.3/",
+    "expecto/": "https://deno.land/x/expecto@v0.1.4/mod/",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
+  },
   "tasks": {
     "cover": "deno test -A --coverage && deno coverage --exclude=test --html coverage",
     "compile": "deno compile --allow-read --allow-write --allow-run --allow-env --output deployer src/main.ts"
