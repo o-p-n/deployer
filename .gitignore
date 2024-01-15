@@ -1,7 +1,11 @@
-/*.key
+# ignore project intermediates/results
+/coverage
+deployer
 
-**/tls.key
+# ignore sensitive files
+**/*.key
 **/*.secret
 **/secrets.env
 
+# ignore system files
 .DS_Store
