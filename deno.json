@@ -1,5 +1,6 @@
 {
   "tasks": {
+    "cover": "deno test -A --coverage && deno coverage --exclude=test --html coverage",
     "compile": "deno compile --allow-read --allow-write --allow-run --allow-env --output deployer src/main.ts"
   }
 }
