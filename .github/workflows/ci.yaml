@@ -1,5 +1,8 @@
 on:
   pull_request:
+    branches:
+      - main
+  workflow_call:
 
 env:
   DENO_VERSION: 1.39.4
