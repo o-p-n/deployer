@@ -1,4 +1,5 @@
 # ignore project intermediates/results
+/.cache
 /coverage
 deployer
 
