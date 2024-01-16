@@ -5,6 +5,12 @@
     "expecto/": "https://deno.land/x/expecto@v0.1.4/mod/",
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
   },
+  "lint": {
+    "exclude": [".cache/**"]
+  },
+  "fmt": {
+    "exclude": [".cache/**"]
+  },
   "tasks": {
     "checks": "deno lint && deno fmt --check",
     "cover": "deno test -A --coverage && deno coverage --exclude=test --lcov --output=coverage/lcov coverage && deno coverage --exclude=test --html coverage && deno coverage --exclude=test coverage",
