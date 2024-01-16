@@ -14,7 +14,9 @@ export const GlobalSchema = z.object({
   identityDir: z.string(),
 });
 
-export type GlobalCommand = Command<void, void, z.infer<typeof GlobalSchema>>;
+export type GlobalConfig = z.infer<typeof GlobalSchema>;
+
+export type GlobalCommand = Command<void, void, GlobalConfig>;
 
 export function global(): GlobalCommand {
   return new Command()
