@@ -6,7 +6,8 @@
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
   },
   "tasks": {
-    "cover": "deno test -A --coverage && deno coverage --exclude=test --html coverage",
-    "compile": "deno compile --allow-read --allow-write --allow-run --allow-env --output deployer src/main.ts"
+    "checks": "deno lint && deno fmt --check",
+    "cover": "deno test -A --coverage && deno coverage --exclude=test --lcov --output=coverage/lcov coverage && deno coverage --exclude=test --html coverage && deno coverage --exclude=test coverage",
+    "compile": "git clean -dfx coverage && deno compile --allow-read --allow-write --allow-run --allow-env --output deployer src/main.ts"
   }
 }
