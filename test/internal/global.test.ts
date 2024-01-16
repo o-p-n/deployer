@@ -1,12 +1,12 @@
 /** */
 
 import { afterEach, beforeEach, describe, it } from "deno_std/testing/bdd.ts";
-import { expect, mock } from "./mocked.ts";
+import { expect, mock } from "../mocked.ts";
 
 import { ValidationError } from "cliffy/command/mod.ts";
-import { _internals, global } from "../src/cli.ts";
+import { _internals, global } from "../../src/internal/global.ts";
 
-describe("cli", () => {
+describe("internal/global", () => {
   describe("global()", () => {
     let spyGetEnv: mock.Spy;
 
