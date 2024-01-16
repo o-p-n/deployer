@@ -1,10 +1,10 @@
 /** */
 
-import { global } from "./internal/global.ts";
+import { Command } from "cliffy/command/mod.ts";
+import { globalCommand } from "./internal/global.ts";
 
 export function createCommand() {
-  // deno-lint-ignore prefer-const
-  let cli = global();
+  let cli: Command = globalCommand();
 
   return cli;
 }
