@@ -1,0 +1,52 @@
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+
+env:
+  DENO_VERSION: 1.39.4
+  DENO_DIR: "${{ github.workspace }}/.cache/deno"
+
+jobs:
+  checks:
+    name: "Coding Checks"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: Setup caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: deno-${{ runner.os }}-${{ hashFiles('deno.*', '**/deps.ts') }}
+      - name: Run checks
+        run: |
+          deno task checks
+  tests:
+    name: "Testing"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: Setup caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: deno-${{ runner.os }}-${{ hashFiles('deno.*', '**/deps.ts') }}
+      - name: Run tests
+        run: |
+          deno task cover
+      - name: Report coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage/lcov
+
