@@ -158,7 +158,7 @@ describe("internal/keys", () => {
         spyResolve = mock.stub(
           _internals,
           "resolve",
-          (...args) => join(...args)
+          (...args) => join(...args),
         );
         spyWriteFile = mock.stub(_internals, "writeFile");
 
