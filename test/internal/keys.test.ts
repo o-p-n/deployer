@@ -50,7 +50,7 @@ describe("internal/keys", () => {
 
   describe("KeyOp", () => {
     describe("ctor", () => {
-      it("creates with the given config", () => {
+      it("creates with the given opts", () => {
         const config = {
           env: "testing",
           identityDir: "/devel/identity",

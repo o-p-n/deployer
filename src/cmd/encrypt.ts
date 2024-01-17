@@ -10,8 +10,8 @@ export const _internals = {
   handler,
 };
 
-function createKeyOp(config: GlobalOpts) {
-  return new KeyOp(config);
+function createKeyOp(opts: GlobalOpts) {
+  return new KeyOp(opts);
 }
 
 export function encryptCommand(
@@ -23,8 +23,8 @@ export function encryptCommand(
     .reset();
 }
 
-async function handler(config: GlobalOpts, file: string) {
-  const op = _internals.createKeyOp(config);
+async function handler(opts: GlobalOpts, file: string) {
+  const op = _internals.createKeyOp(opts);
 
   await op.encrypt(file);
 }

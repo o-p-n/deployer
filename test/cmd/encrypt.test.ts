@@ -25,8 +25,8 @@ describe("cmd/encrypt", () => {
       spyCreateKeyOp = mock.stub(
         _internals,
         "createKeyOp",
-        (config: GlobalOpts) => {
-          const op = createKeyOp(config);
+        (opts: GlobalOpts) => {
+          const op = createKeyOp(opts);
           spyEncrypt = mock.stub(op, "encrypt");
           return op;
         },
