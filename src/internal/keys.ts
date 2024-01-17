@@ -1,7 +1,7 @@
 /** */
 
 import { join, resolve } from "deno_std/path/mod.ts";
-import { CommandBuilder } from "dax";
+import $, { CommandBuilder } from "dax";
 
 import { GlobalOpts } from "./global.ts";
 
@@ -91,13 +91,11 @@ export class KeyOp {
     const src = await _internals.readFile(srcPath);
 
     const pubKey = await this.getPublicKey();
-    const result = await _internals.createExec(
-      "sops --encrypt /dev/stdin",
-      src,
-      {
+    const result = await $`sops --encrypt /dev/stdin`
+      .stdin(src)
+      .env({
         "SOPS_AGE_RECIPIENTS": pubKey,
-      },
-    );
+      });
 
     const dstPath = `${srcPath}.sops`;
     await _internals.writeFile(dstPath, result.stdoutBytes);

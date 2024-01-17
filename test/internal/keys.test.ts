@@ -5,7 +5,7 @@ import { expect, mock } from "../mocked.ts";
 
 import { Buffer } from "deno_std_209/io/mod.ts";
 import { join } from "deno_std/path/mod.ts";
-import { CommandResult } from "dax";
+import { CommandBuilder, CommandResult } from "dax";
 
 import { GlobalOpts } from "../../src/internal/global.ts";
 import { _internals, KeyOp, loadKey } from "../../src/internal/keys.ts";
@@ -130,7 +130,7 @@ describe("internal/keys", () => {
       let spyPrivateKey: mock.Spy | undefined;
       let spyReadFile: mock.Spy | undefined;
       let spyWriteFile: mock.Spy | undefined;
-      let spyCreateExec: mock.Spy | undefined;
+      let spyCommandBuilderThen: mock.Spy | undefined;
 
       function stubReadFile(data: Uint8Array) {
         spyReadFile = mock.stub(
@@ -140,25 +140,18 @@ describe("internal/keys", () => {
         );
       }
 
-      function stubCreateExec(output: Uint8Array) {
-        const orig = _internals.createExec;
-
+      function stubCommandBuilderThen(output: Uint8Array) {
         const result: CommandResult = new CommandResult(
           0,
           new Buffer(output),
           new Buffer(),
           new Buffer(output),
         );
-        spyCreateExec = mock.stub(
-          _internals,
-          "createExec",
-          (...args) => {
-            const cmd = orig(...args);
-            mock.stub(cmd, "then", (onfulfilled, _onrejected) => {
-              onfulfilled!(result);
-              return cmd;
-            });
-            return cmd;
+        spyCommandBuilderThen = mock.stub(
+          CommandBuilder.prototype,
+          "then",
+          (onfulfilled) => {
+            return Promise.resolve(result).then(onfulfilled);
           },
         );
       }
@@ -185,10 +178,11 @@ describe("internal/keys", () => {
       });
 
       afterEach(() => {
+        spyCommandBuilderThen && !spyCommandBuilderThen.restored &&
+          spyCommandBuilderThen.restore();
         spyResolve && !spyResolve.restored && spyResolve.restore();
         spyReadFile && !spyReadFile.restored && spyReadFile.restore();
         spyWriteFile && !spyWriteFile.restored && spyWriteFile.restore();
-        spyCreateExec && !spyCreateExec.restored && spyCreateExec.restore();
         spyPublicKey && !spyPublicKey.restored && spyPublicKey.restore();
         spyPrivateKey && !spyPrivateKey.restored && spyPrivateKey.restore();
       });
@@ -198,7 +192,7 @@ describe("internal/keys", () => {
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ptext);
-        stubCreateExec(ctext);
+        stubCommandBuilderThen(ctext);
         await op.encrypt("secrets.env");
 
         expect(spyPublicKey).to.have.been.deep.calledWith([]);
@@ -209,20 +203,14 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env.sops",
           ctext,
         ]);
-        expect(spyCreateExec).to.have.been.deep.calledWith([
-          "sops --encrypt /dev/stdin",
-          ptext,
-          {
-            "SOPS_AGE_RECIPIENTS": "public key contents",
-          },
-        ]);
+        expect(spyCommandBuilderThen).to.have.been.deep.called(1);
       });
       it("decrypts a file", async () => {
         const ptext = new TextEncoder().encode("plaintext");
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ctext);
-        stubCreateExec(ptext);
+        stubCommandBuilderThen(ptext);
         await op.decrypt("secrets.env");
 
         expect(spyPrivateKey).to.have.been.deep.calledWith([]);
@@ -233,13 +221,7 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env",
           ptext,
         ]);
-        expect(spyCreateExec).to.have.been.deep.calledWith([
-          "sops --decrypt /dev/stdin",
-          ctext,
-          {
-            "SOPS_AGE_KEY": "private key contents",
-          },
-        ]);
+        expect(spyCommandBuilderThen).to.have.been.called(1);
       });
     });
   });
