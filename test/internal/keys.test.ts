@@ -130,7 +130,7 @@ describe("internal/keys", () => {
       let spyPrivateKey: mock.Spy | undefined;
       let spyReadFile: mock.Spy | undefined;
       let spyWriteFile: mock.Spy | undefined;
-      let spyExecute: mock.Spy | undefined;
+      let spyCreateExec: mock.Spy | undefined;
 
       function stubReadFile(data: Uint8Array) {
         spyReadFile = mock.stub(
@@ -140,17 +140,26 @@ describe("internal/keys", () => {
         );
       }
 
-      function stubExecute(output: Uint8Array) {
+      function stubCreateExec(output: Uint8Array) {
+        const orig = _internals.createExec;
+
         const result: CommandResult = new CommandResult(
           0,
           new Buffer(output),
           new Buffer(),
           new Buffer(output),
         );
-        spyExecute = mock.stub(
+        spyCreateExec = mock.stub(
           _internals,
-          "execute",
-          () => Promise.resolve(result),
+          "createExec",
+          (...args) => {
+            const cmd = orig(...args);
+            mock.stub(cmd, "then", (onfulfilled, _onrejected) => {
+              onfulfilled!(result);
+              return cmd;
+            });
+            return cmd;
+          },
         );
       }
 
@@ -179,7 +188,7 @@ describe("internal/keys", () => {
         spyResolve && !spyResolve.restored && spyResolve.restore();
         spyReadFile && !spyReadFile.restored && spyReadFile.restore();
         spyWriteFile && !spyWriteFile.restored && spyWriteFile.restore();
-        spyExecute && !spyExecute.restored && spyExecute.restore();
+        spyCreateExec && !spyCreateExec.restored && spyCreateExec.restore();
         spyPublicKey && !spyPublicKey.restored && spyPublicKey.restore();
         spyPrivateKey && !spyPrivateKey.restored && spyPrivateKey.restore();
       });
@@ -189,7 +198,7 @@ describe("internal/keys", () => {
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ptext);
-        stubExecute(ctext);
+        stubCreateExec(ctext);
         await op.encrypt("secrets.env");
 
         expect(spyPublicKey).to.have.been.deep.calledWith([]);
@@ -200,7 +209,7 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env.sops",
           ctext,
         ]);
-        expect(spyExecute).to.have.been.deep.calledWith([
+        expect(spyCreateExec).to.have.been.deep.calledWith([
           "sops --encrypt /dev/stdin",
           ptext,
           {
@@ -213,7 +222,7 @@ describe("internal/keys", () => {
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ctext);
-        stubExecute(ptext);
+        stubCreateExec(ptext);
         await op.decrypt("secrets.env");
 
         expect(spyPrivateKey).to.have.been.deep.calledWith([]);
@@ -224,7 +233,7 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env",
           ptext,
         ]);
-        expect(spyExecute).to.have.been.deep.calledWith([
+        expect(spyCreateExec).to.have.been.deep.calledWith([
           "sops --decrypt /dev/stdin",
           ctext,
           {

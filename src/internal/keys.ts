@@ -1,7 +1,7 @@
 /** */
 
 import { join, resolve } from "deno_std/path/mod.ts";
-import { CommandBuilder, CommandResult } from "dax";
+import { CommandBuilder } from "dax";
 
 import { GlobalConfig } from "./global.ts";
 
@@ -15,15 +15,15 @@ export const _internals = {
   writeFile: Deno.writeFile,
 
   CommandBuilder,
-  execute,
+  createExec,
 };
 
-async function execute(
+function createExec(
   command: string,
   stdin: Uint8Array,
   env: Record<string, string>,
-): Promise<CommandResult> {
-  return await new _internals.CommandBuilder()
+): CommandBuilder {
+  return new _internals.CommandBuilder()
     .command(command)
     .env(env)
     .stdin(stdin)
@@ -92,7 +92,7 @@ export class KeyOp {
     const src = await _internals.readFile(srcPath);
 
     const pubKey = await this.getPublicKey();
-    const result = await _internals.execute(
+    const result = await _internals.createExec(
       "sops --encrypt /dev/stdin",
       src,
       {
@@ -116,7 +116,7 @@ export class KeyOp {
     const src = await _internals.readFile(srcPath);
 
     const prvKey = await this.getPrivateKey();
-    const result = await _internals.execute(
+    const result = await _internals.createExec(
       "sops --decrypt /dev/stdin",
       src,
       {
