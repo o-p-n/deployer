@@ -1,7 +1,6 @@
 /** */
 
 import { Command, HelpCommand } from "cliffy/command/mod.ts";
-import { z } from "zod";
 
 export const _internals = {
   getEnv(key: string, def?: string): string | undefined {
@@ -10,8 +9,8 @@ export const _internals = {
 };
 
 export type GlobalOpts = {
-  env: string,
-  identityDir: string,
+  env: string;
+  identityDir: string;
 };
 
 // TODO: figure out how to get rid of any ...
@@ -37,6 +36,6 @@ export function globalCommand(): Command<GlobalOpts> {
     .default("help")
     .reset();
 
-    // this funny biz is intentional to keep type safety everywhere else
-    return (cmd as unknown) as Command<GlobalOpts>;
+  // this funny biz is intentional to keep type safety everywhere else
+  return (cmd as unknown) as Command<GlobalOpts>;
 }

@@ -3,7 +3,6 @@
 import { afterEach, describe, it } from "deno_std/testing/bdd.ts";
 import { expect, mock } from "../mocked.ts";
 
-import { Command } from "cliffy/command/mod.ts";
 import { _internals, globalCommand } from "../../src/internal/global.ts";
 
 describe("internal/global", () => {

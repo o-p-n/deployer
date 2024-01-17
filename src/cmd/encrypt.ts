@@ -14,7 +14,9 @@ function createKeyOp(config: GlobalOpts) {
   return new KeyOp(config);
 }
 
-export function encryptCommand(global: Command<GlobalOpts>): Command<GlobalOpts> {
+export function encryptCommand(
+  global: Command<GlobalOpts>,
+): Command<GlobalOpts> {
   return global.command("encrypt <file:file>")
     .description("encrypts a data file for the given environment")
     .action(_internals.handler)
