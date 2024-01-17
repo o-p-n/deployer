@@ -17,10 +17,13 @@ describe("main", () => {
     expect(opt).to.exist();
 
     let cmd;
+    cmd = result.getCommand("help");
+    expect(cmd).to.exist();
+
     cmd = result.getCommand("encrypt");
     expect(cmd).to.exist();
 
-    cmd = result.getCommand("decrypt", true);
+    cmd = result.getCommand("decrypt");
     expect(cmd).to.exist();
   });
 });
