@@ -1,7 +1,6 @@
 /** */
 
 import { Command, HelpCommand } from "cliffy/command/mod.ts";
-import { z } from "zod";
 
 export const _internals = {
   getEnv(key: string, def?: string): string | undefined {
@@ -9,17 +8,14 @@ export const _internals = {
   },
 };
 
-export const GlobalSchema = z.object({
-  env: z.string(),
-  identityDir: z.string(),
-});
-
-export type GlobalConfig = z.infer<typeof GlobalSchema>;
+export type GlobalOpts = {
+  env: string;
+  identityDir: string;
+};
 
 // TODO: figure out how to get rid of any ...
-// deno-lint-ignore no-explicit-any
-export function globalCommand(): any & Command {
-  return new Command()
+export function globalCommand(): Command<GlobalOpts> {
+  const cmd = new Command()
     .name("deployer")
     .description("Tool for deploying resources to outer-planes.net")
     .globalOption(
@@ -37,5 +33,9 @@ export function globalCommand(): any & Command {
       },
     )
     .command("help", new HelpCommand().noGlobals()).reset()
-    .default("help");
+    .default("help")
+    .reset();
+
+  // this funny biz is intentional to keep type safety everywhere else
+  return (cmd as unknown) as Command<GlobalOpts>;
 }

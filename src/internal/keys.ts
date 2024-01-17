@@ -3,7 +3,7 @@
 import { join, resolve } from "deno_std/path/mod.ts";
 import { CommandBuilder } from "dax";
 
-import { GlobalConfig } from "./global.ts";
+import { GlobalOpts } from "./global.ts";
 
 export const _internals = {
   resolve,
@@ -14,7 +14,6 @@ export const _internals = {
   readFile: Deno.readFile,
   writeFile: Deno.writeFile,
 
-  CommandBuilder,
   createExec,
 };
 
@@ -23,7 +22,7 @@ function createExec(
   stdin: Uint8Array,
   env: Record<string, string>,
 ): CommandBuilder {
-  return new _internals.CommandBuilder()
+  return new CommandBuilder()
     .command(command)
     .env(env)
     .stdin(stdin)
@@ -31,7 +30,7 @@ function createExec(
 }
 
 export async function loadKey(
-  cfg: GlobalConfig,
+  cfg: GlobalOpts,
   isPrivate: boolean,
 ): Promise<string> {
   const {
@@ -49,9 +48,9 @@ export async function loadKey(
 export class KeyOp {
   #cache = new Map<string, string>();
 
-  readonly config: GlobalConfig;
+  readonly config: GlobalOpts;
 
-  constructor(config: GlobalConfig) {
+  constructor(config: GlobalOpts) {
     this.config = config;
   }
 

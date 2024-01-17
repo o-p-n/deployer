@@ -2,28 +2,28 @@
 
 import { Command } from "cliffy/command/mod.ts";
 
-import { GlobalConfig } from "../internal/global.ts";
+import { GlobalOpts } from "../internal/global.ts";
 import { KeyOp } from "../internal/keys.ts";
 
 export const _internals = {
   createKeyOp,
-  handler,
 };
 
-function createKeyOp(config: GlobalConfig) {
-  return new KeyOp(config);
+function createKeyOp(opts: GlobalOpts) {
+  return new KeyOp(opts);
 }
 
-// deno-lint-ignore no-explicit-any
-export function decryptCommand(global: any & Command): any {
+export function decryptCommand(
+  global: Command<GlobalOpts>,
+): Command<GlobalOpts> {
   return global.command("decrypt <file:file>")
     .description("decrypts a data file for the given environment")
-    .action(_internals.handler)
+    .action(handler)
     .reset();
 }
 
-async function handler(config: GlobalConfig, file: string) {
-  const op = _internals.createKeyOp(config);
+async function handler(opts: GlobalOpts, file: string) {
+  const op = _internals.createKeyOp(opts);
 
   await op.decrypt(file);
 }

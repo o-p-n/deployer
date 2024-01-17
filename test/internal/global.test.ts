@@ -3,7 +3,6 @@
 import { afterEach, describe, it } from "deno_std/testing/bdd.ts";
 import { expect, mock } from "../mocked.ts";
 
-import { Command } from "cliffy/command/mod.ts";
 import { _internals, globalCommand } from "../../src/internal/global.ts";
 
 describe("internal/global", () => {
@@ -19,7 +18,7 @@ describe("internal/global", () => {
     }
 
     it("creates with the expected parameters (default)", () => {
-      const result: Command = globalCommand();
+      const result = globalCommand();
       expect(result.getName()).to.equal("deployer");
       expect(result.getDescription()).to.equal(
         "Tool for deploying resources to outer-planes.net",
@@ -47,7 +46,7 @@ describe("internal/global", () => {
       const envvar = "/from-env/identities";
       stubGetEnv(envvar);
 
-      const result: Command = globalCommand();
+      const result = globalCommand();
       expect(result.getName()).to.equal("deployer");
       expect(result.getDescription()).to.equal(
         "Tool for deploying resources to outer-planes.net",
