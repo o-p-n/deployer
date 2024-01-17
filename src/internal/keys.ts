@@ -14,7 +14,6 @@ export const _internals = {
   readFile: Deno.readFile,
   writeFile: Deno.writeFile,
 
-  CommandBuilder,
   createExec,
 };
 
@@ -23,7 +22,7 @@ function createExec(
   stdin: Uint8Array,
   env: Record<string, string>,
 ): CommandBuilder {
-  return new _internals.CommandBuilder()
+  return new CommandBuilder()
     .command(command)
     .env(env)
     .stdin(stdin)

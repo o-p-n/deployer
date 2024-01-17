@@ -7,7 +7,6 @@ import { KeyOp } from "../internal/keys.ts";
 
 export const _internals = {
   createKeyOp,
-  handler,
 };
 
 function createKeyOp(opts: GlobalOpts) {
@@ -19,7 +18,7 @@ export function encryptCommand(
 ): Command<GlobalOpts> {
   return global.command("encrypt <file:file>")
     .description("encrypts a data file for the given environment")
-    .action(_internals.handler)
+    .action(handler)
     .reset();
 }
 
