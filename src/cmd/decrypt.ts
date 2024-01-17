@@ -18,7 +18,6 @@ function createKeyOp(config: GlobalConfig) {
 export function decryptCommand(global: any & Command): any {
   return global.command("decrypt <file:file>")
     .description("decrypts a data file for the given environment")
-    .hidden()
     .action(_internals.handler)
     .reset();
 }
