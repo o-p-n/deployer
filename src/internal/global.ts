@@ -16,20 +16,20 @@ export const GlobalSchema = z.object({
 
 export type GlobalConfig = z.infer<typeof GlobalSchema>;
 
-export type GlobalCommand = Command<void, void, GlobalConfig>;
-
-export function global(): GlobalCommand {
+// TODO: figure out how to get rid of any ...
+// deno-lint-ignore no-explicit-any
+export function globalCommand(): any & Command {
   return new Command()
     .name("deployer")
     .description("Tool for deploying resources to outer-planes.net")
-    .option(
+    .globalOption(
       "-e, --env <env:string>",
       "the environment to operate on",
       {
         required: true,
       },
     )
-    .option(
+    .globalOption(
       "-I, --identity-dir <identities:file>",
       "directory containing identities (public/private keys)",
       {
