@@ -4,7 +4,6 @@
     "dax": "https://deno.land/x/dax@0.36.0/mod.ts",
     "deno_std/": "https://deno.land/std@0.212.0/",
     "deno_std_209/": "https://deno.land/std@0.209.0/",
-    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
     "expecto/": "https://deno.land/x/expecto@v0.1.4/mod/"
   },
   "lint": {
