@@ -9,6 +9,14 @@ describe("main", () => {
   it("creates the command", () => {
     const result = createCommand();
 
-    expect(result).to.exist();
+    let opt;
+    opt = result.getOption("env");
+    expect(opt).to.exist();
+
+    opt = result.getOption("identity-dir");
+    expect(opt).to.exist();
+
+    const cmd = result.getCommand("encrypt");
+    expect(cmd).to.exist();
   });
 });
