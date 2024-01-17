@@ -16,7 +16,11 @@ describe("main", () => {
     opt = result.getOption("identity-dir");
     expect(opt).to.exist();
 
-    const cmd = result.getCommand("encrypt");
+    let cmd;
+    cmd = result.getCommand("encrypt");
+    expect(cmd).to.exist();
+
+    cmd = result.getCommand("decrypt", true);
     expect(cmd).to.exist();
   });
 });
