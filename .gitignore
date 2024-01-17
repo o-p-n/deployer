@@ -1,6 +1,8 @@
 # ignore project intermediates/results
 /.cache
+/.task
 /coverage
+/target
 deployer
 
 # ignore sensitive files
