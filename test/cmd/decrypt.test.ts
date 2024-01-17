@@ -5,7 +5,7 @@ import { expect, mock } from "../mocked.ts";
 
 import { Command } from "cliffy/command/mod.ts";
 
-import { globalCommand, GlobalConfig } from "../../src/internal/global.ts";
+import { globalCommand, GlobalOpts } from "../../src/internal/global.ts";
 import { _internals, decryptCommand } from "../../src/cmd/decrypt.ts";
 
 describe("cmd/decrypt", () => {
@@ -25,7 +25,7 @@ describe("cmd/decrypt", () => {
       spyCreateKeyOp = mock.stub(
         _internals,
         "createKeyOp",
-        (config: GlobalConfig) => {
+        (config: GlobalOpts) => {
           const op = createKeyOp(config);
           spyDecrypt = mock.stub(op, "decrypt");
           return op;
@@ -38,7 +38,7 @@ describe("cmd/decrypt", () => {
     });
 
     it("creates with expected parameters", () => {
-      const result: Command = decryptCommand(global);
+      const result = decryptCommand(global);
 
       const decrypt = result.getCommand("decrypt", true);
       expect(decrypt).to.exist();

@@ -7,7 +7,7 @@ import { Buffer } from "deno_std_209/io/mod.ts";
 import { join } from "deno_std/path/mod.ts";
 import { CommandResult } from "dax";
 
-import { GlobalConfig } from "../../src/internal/global.ts";
+import { GlobalOpts } from "../../src/internal/global.ts";
 import { _internals, KeyOp, loadKey } from "../../src/internal/keys.ts";
 
 describe("internal/keys", () => {
@@ -74,7 +74,7 @@ describe("internal/keys", () => {
         spyLoadKey = mock.stub(
           _internals,
           "loadKey",
-          (cfg: GlobalConfig, isPrivate: boolean) =>
+          (cfg: GlobalOpts, isPrivate: boolean) =>
             Promise.resolve(
               `key for ${isPrivate ? "private" : "public"} ${cfg.env}`,
             ),

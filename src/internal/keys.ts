@@ -3,7 +3,7 @@
 import { join, resolve } from "deno_std/path/mod.ts";
 import { CommandBuilder } from "dax";
 
-import { GlobalConfig } from "./global.ts";
+import { GlobalOpts } from "./global.ts";
 
 export const _internals = {
   resolve,
@@ -31,7 +31,7 @@ function createExec(
 }
 
 export async function loadKey(
-  cfg: GlobalConfig,
+  cfg: GlobalOpts,
   isPrivate: boolean,
 ): Promise<string> {
   const {
@@ -49,9 +49,9 @@ export async function loadKey(
 export class KeyOp {
   #cache = new Map<string, string>();
 
-  readonly config: GlobalConfig;
+  readonly config: GlobalOpts;
 
-  constructor(config: GlobalConfig) {
+  constructor(config: GlobalOpts) {
     this.config = config;
   }
 
