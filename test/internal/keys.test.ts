@@ -154,7 +154,10 @@ describe("internal/keys", () => {
           "createExec",
           (...args) => {
             const cmd = orig(...args);
-            mock.stub(cmd, "then", (onfulfilled, _onrejected) => { onfulfilled!(result); return cmd; });
+            mock.stub(cmd, "then", (onfulfilled, _onrejected) => {
+              onfulfilled!(result);
+              return cmd;
+            });
             return cmd;
           },
         );

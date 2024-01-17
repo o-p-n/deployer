@@ -1,7 +1,7 @@
 /** */
 
 import { join, resolve } from "deno_std/path/mod.ts";
-import { CommandBuilder, CommandResult } from "dax";
+import { CommandBuilder } from "dax";
 
 import { GlobalConfig } from "./global.ts";
 
