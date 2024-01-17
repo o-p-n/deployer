@@ -17,6 +17,9 @@ describe("main", () => {
     expect(opt).to.exist();
 
     let cmd;
+    cmd = result.getCommand("help");
+    expect(cmd).to.exist();
+
     cmd = result.getCommand("encrypt");
     expect(cmd).to.exist();
 
