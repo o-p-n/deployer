@@ -39,6 +39,9 @@ describe("internal/global", () => {
       expect(opt?.typeDefinition).to.equal("<identities:file>");
       expect(opt?.default).to.equal(Deno.cwd());
       expect(opt?.global).to.be.true();
+
+      const cmd = result.getCommand("help");
+      expect(cmd).to.exist();
     });
     it("creates with the expected parameters (env-var)", () => {
       const envvar = "/from-env/identities";

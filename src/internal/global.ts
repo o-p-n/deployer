@@ -1,6 +1,6 @@
 /** */
 
-import { Command } from "cliffy/command/mod.ts";
+import { Command, HelpCommand } from "cliffy/command/mod.ts";
 import { z } from "zod";
 
 export const _internals = {
@@ -35,5 +35,7 @@ export function globalCommand(): any & Command {
       {
         default: _internals.getEnv("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
       },
-    );
+    )
+    .command("help", new HelpCommand().noGlobals()).reset()
+    .default("help");
 }
