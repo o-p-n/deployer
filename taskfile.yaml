@@ -71,16 +71,31 @@ tasks:
           --allow-read --allow-write \
           --allow-env --allow-run \
           --coverage 
-  coverage.report:
+
+  coverage.html:
     sources:
       - coverage/*.json
     generates:
       - coverage/html/**
-      - coverage/lcov
     cmds:
       - deno coverage --exclude=test --html coverage
+  coverage.lcov:
+    sources:
+      - coverage/*.json
+    generates:
+      - coverage/lcov
+    cmds:
       - deno coverage --exclude=test --lcov --output=coverage/lcov coverage
+  coverage.summary:
+    cmds:
       - deno coverage --exclude=test coverage
+  coverage.report:
+    deps:
+      - coverage.html
+      - coverage.lcov
+    cmds:
+      - task: coverage.summary
+
   cover:
     desc: Runs tests and reports coverage
     cmds:
