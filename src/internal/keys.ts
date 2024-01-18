@@ -1,7 +1,7 @@
 /** */
 
 import { join, resolve } from "deno_std/path/mod.ts";
-import $, { CommandBuilder } from "dax";
+import $ from "dax";
 
 import { GlobalOpts } from "./global.ts";
 
@@ -13,21 +13,7 @@ export const _internals = {
   readTextFile: Deno.readTextFile,
   readFile: Deno.readFile,
   writeFile: Deno.writeFile,
-
-  createExec,
 };
-
-function createExec(
-  command: string,
-  stdin: Uint8Array,
-  env: Record<string, string>,
-): CommandBuilder {
-  return new CommandBuilder()
-    .command(command)
-    .env(env)
-    .stdin(stdin)
-    .stdout("piped");
-}
 
 export async function loadKey(
   cfg: GlobalOpts,
@@ -113,13 +99,11 @@ export class KeyOp {
     const src = await _internals.readFile(srcPath);
 
     const prvKey = await this.getPrivateKey();
-    const result = await _internals.createExec(
-      "sops --decrypt /dev/stdin",
-      src,
-      {
+    const result = await $`sops --decrypt /dev/stdin`
+      .stdin(src)
+      .env({
         "SOPS_AGE_KEY": prvKey,
-      },
-    );
+      });
 
     await _internals.writeFile(dstPath, result.stdoutBytes);
     console.debug(`... decrypted ${srcPath} → ${dstPath}`);
