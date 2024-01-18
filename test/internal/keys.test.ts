@@ -1,11 +1,9 @@
 /** */
 
 import { afterEach, beforeEach, describe, it } from "deno_std/testing/bdd.ts";
-import { expect, mock } from "../mocked.ts";
+import { CommandBuilderStubber, expect, mock } from "../mocked.ts";
 
-import { Buffer } from "deno_std_209/io/mod.ts";
 import { join } from "deno_std/path/mod.ts";
-import { CommandBuilder, CommandResult } from "dax";
 
 import { GlobalOpts } from "../../src/internal/global.ts";
 import { _internals, KeyOp, loadKey } from "../../src/internal/keys.ts";
@@ -130,29 +128,14 @@ describe("internal/keys", () => {
       let spyPrivateKey: mock.Spy | undefined;
       let spyReadFile: mock.Spy | undefined;
       let spyWriteFile: mock.Spy | undefined;
-      let spyCommandBuilderThen: mock.Spy | undefined;
+
+      const spyCommandBuilder = new CommandBuilderStubber();
 
       function stubReadFile(data: Uint8Array) {
         spyReadFile = mock.stub(
           _internals,
           "readFile",
           () => Promise.resolve(data),
-        );
-      }
-
-      function stubCommandBuilderThen(output: Uint8Array) {
-        const result: CommandResult = new CommandResult(
-          0,
-          new Buffer(output),
-          new Buffer(),
-          new Buffer(output),
-        );
-        spyCommandBuilderThen = mock.stub(
-          CommandBuilder.prototype,
-          "then",
-          (onfulfilled) => {
-            return Promise.resolve(result).then(onfulfilled);
-          },
         );
       }
 
@@ -178,8 +161,8 @@ describe("internal/keys", () => {
       });
 
       afterEach(() => {
-        spyCommandBuilderThen && !spyCommandBuilderThen.restored &&
-          spyCommandBuilderThen.restore();
+        spyCommandBuilder.restore();
+
         spyResolve && !spyResolve.restored && spyResolve.restore();
         spyReadFile && !spyReadFile.restored && spyReadFile.restore();
         spyWriteFile && !spyWriteFile.restored && spyWriteFile.restore();
@@ -192,7 +175,9 @@ describe("internal/keys", () => {
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ptext);
-        stubCommandBuilderThen(ctext);
+        spyCommandBuilder.apply({
+          out: ctext,
+        });
         await op.encrypt("secrets.env");
 
         expect(spyPublicKey).to.have.been.deep.calledWith([]);
@@ -203,14 +188,16 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env.sops",
           ctext,
         ]);
-        expect(spyCommandBuilderThen).to.have.been.deep.called(1);
+        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
       });
       it("decrypts a file", async () => {
         const ptext = new TextEncoder().encode("plaintext");
         const ctext = new TextEncoder().encode("ciphertext");
 
         stubReadFile(ctext);
-        stubCommandBuilderThen(ptext);
+        spyCommandBuilder.apply({
+          out: ptext,
+        });
         await op.decrypt("secrets.env");
 
         expect(spyPrivateKey).to.have.been.deep.calledWith([]);
@@ -221,7 +208,7 @@ describe("internal/keys", () => {
           "k8s/env/testing/secrets.env",
           ptext,
         ]);
-        expect(spyCommandBuilderThen).to.have.been.called(1);
+        expect(spyCommandBuilder.stub).to.have.been.called(1);
       });
     });
   });
