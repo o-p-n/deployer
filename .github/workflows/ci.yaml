@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_DIR}}/task
-          key: task-${{ runner.os }}-${{ hashFiles('src/**', 'test/**') }}
+          key: task-${{ runner.os }}-${{ hashFiles('deno.*', 'src/**', 'test/**') }}
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
