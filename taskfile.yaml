@@ -1,0 +1,115 @@
+version: "3"
+
+tasks:
+  clean.target:
+    desc:
+    requires:
+      vars:
+        - TARGET
+    cmds:
+      - git clean -dfx target/{{ .TARGET }}
+  clean.all-targets:
+    - git clean -dfx target
+  clean.cache:
+    - git clean -dfx .cache
+  clean.coverage:
+    cmds:
+      - git clean -dfx coverage
+  
+  clean:
+    desc: Cleans intermediates
+    deps:
+      - clean.all-targets
+      - clean.cache
+      - clean.coverage
+
+  compile.target:
+    requires:
+      vars:
+        - TARGET
+    sources:
+      - "src/**"
+    generates:
+      - target/{{ .TARGET }}/deployer
+    cmds:
+      - task: clean.target
+        vars:
+          TARGET: "{{ .TARGET }}"
+      - mkdir -p target/{{ .TARGET }}
+      - |
+        deno compile \
+          --allow-read --allow-write \
+          --allow-env --allow-run \
+          --target {{ .TARGET }} --output target/{{ .TARGET }}/deployer \
+          ./src/main.ts
+
+  compile.linux-amd64:
+    - task: compile.target
+      vars:
+        TARGET: x86_64-unknown-linux-gnu
+  compile.darwin-arm64:
+    - task: compile.target
+      vars:
+        TARGET: aarch64-apple-darwin
+  build:
+    desc: Compiles all platform binaries
+    deps:
+      - compile.linux-amd64
+      - compile.darwin-arm64
+
+  test:
+    desc: Runs tests
+    sources:
+      - src/**.ts
+      - test/**.ts
+    generates:
+      - coverage/*.json
+    cmds:
+      - task: clean.coverage
+      - |
+        deno test \
+          --allow-read --allow-write \
+          --allow-env --allow-run \
+          --coverage 
+
+  coverage.html:
+    sources:
+      - coverage/*.json
+    generates:
+      - coverage/html/**
+    cmds:
+      - deno coverage --exclude=test --html coverage
+  coverage.lcov:
+    sources:
+      - coverage/*.json
+    generates:
+      - coverage/lcov
+    cmds:
+      - deno coverage --exclude=test --lcov --output=coverage/lcov coverage
+  coverage.summary:
+    cmds:
+      - deno coverage --exclude=test coverage
+  coverage.report:
+    deps:
+      - coverage.html
+      - coverage.lcov
+    cmds:
+      - task: coverage.summary
+
+  cover:
+    desc: Runs tests and reports coverage
+    cmds:
+      - task: test
+      - task: coverage.report
+
+  check.lint:
+    - deno lint {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
+  
+  check.fmt:
+    - deno fmt --check {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
+
+  checks:
+    desc: Check coding
+    deps:
+      - check.lint
+      - check.fmt

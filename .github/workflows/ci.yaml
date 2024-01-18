@@ -8,8 +8,10 @@ on:
   workflow_call:
 
 env:
-  DENO_VERSION: 1.39.4
+  CACHE_DIR: "${{ github.workspace }}/.cache"
+  TASK_TEMP_DIR: "${{ github.workspace }}/.cache/task"
   DENO_DIR: "${{ github.workspace }}/.cache/deno"
+  DENO_VERSION: 1.39.4
 
 jobs:
   checks:
@@ -18,36 +20,56 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+      - name: Setup Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Task caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CACHE_DIR}}/task
+          key: task-${{ runner.os }}-${{ hashFiles('src/**', 'test/**') }}
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ env.DENO_VERSION }}
-      - name: Setup caching
+      - name: Setup Deno caching
         uses: actions/cache@v3
         with:
           path: ${{ env.DENO_DIR }}
           key: deno-${{ runner.os }}-${{ hashFiles('deno.*', '**/deps.ts') }}
       - name: Run checks
         run: |
-          deno task checks
+          task checks
   tests:
     name: "Testing"
     runs-on: ubuntu-22.04
     steps:
       - name: Check out
         uses: actions/checkout@v4
+      - name: Setup Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Task caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CACHE_DIR}}/task
+          key: task-${{ runner.os }}-${{ hashFiles('deno.*', 'src/**', 'test/**') }}
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ env.DENO_VERSION }}
-      - name: Setup caching
+      - name: Setup Deno caching
         uses: actions/cache@v3
         with:
           path: ${{ env.DENO_DIR }}
           key: deno-${{ runner.os }}-${{ hashFiles('deno.*', '**/deps.ts') }}
       - name: Run tests
         run: |
-          deno task cover
+          task cover
       - name: Report coverage
         uses: codecov/codecov-action@v3
         with:
