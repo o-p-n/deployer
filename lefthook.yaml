@@ -2,9 +2,6 @@ pre-push:
   parallel: true
   exclude: ".cache,docs"
   commands:
-    check-fmt:
-      glob: "*.{ts,js}"
-      run: deno fmt --check {push_files}
-    lint:
-      glob: "*.{ts,js}"
-      run: deno lint {push_files}
+    checks:
+      glob: "*.{js,ts}"
+      run: task checks -- {push_files}

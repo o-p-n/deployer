@@ -103,10 +103,10 @@ tasks:
       - task: coverage.report
 
   check.lint:
-    - deno lint
+    - deno lint {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
   
   check.fmt:
-    - deno fmt --check
+    - deno fmt --check {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
 
   checks:
     desc: Check coding
