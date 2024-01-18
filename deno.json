@@ -11,10 +11,5 @@
   },
   "fmt": {
     "exclude": [".cache/**"]
-  },
-  "tasks": {
-    "checks": "deno lint && deno fmt --check",
-    "cover": "git clean -dfx coverage && deno test -A --coverage && deno coverage --exclude=test --lcov --output=coverage/lcov coverage && deno coverage --exclude=test --html coverage && deno coverage --exclude=test coverage",
-    "compile": "deno compile --allow-read --allow-write --allow-run --allow-env --output deployer src/main.ts"
   }
 }
