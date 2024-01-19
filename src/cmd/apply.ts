@@ -3,15 +3,14 @@
 import { Command } from "cliffy/command/mod.ts";
 
 import { GlobalOpts } from "../internal/global.ts";
-import { KeyOp } from "../internal/keys.ts";
 import { Applier, ApplyOpts } from "../internal/k8s.ts";
 
 export const _internals = {
-  createKeyOp,
+  createApplier,
 };
 
-function createKeyOp(config: GlobalOpts): KeyOp {
-  return new KeyOp(config);
+function createApplier(opts: ApplyOpts) {
+  return new Applier(opts);
 }
 
 export function applyCommand(global: Command<GlobalOpts>): Command<GlobalOpts> {
@@ -25,7 +24,7 @@ export function applyCommand(global: Command<GlobalOpts>): Command<GlobalOpts> {
 }
 
 async function handler(opts: ApplyOpts) {
-  const k8s = new Applier(opts);
+  const k8s = _internals.createApplier(opts);
 
   await k8s.execute();
 }
