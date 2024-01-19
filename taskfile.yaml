@@ -43,6 +43,20 @@ tasks:
           --target {{ .TARGET }} --output target/{{ .TARGET }}/deployer \
           ./src/main.ts
 
+  compile.local:
+    sources:
+      - src/**/*.ts
+    generates:
+      - target/deployer
+    cmds:
+      - mkdir -p target
+      - |
+        deno compile \
+        --allow-read --allow-write \
+        --allow-env --allow-run --allow-sys \
+        --output target/deployer \
+        ./src/main.ts
+
   compile.linux-amd64:
     - task: compile.target
       vars:
@@ -56,6 +70,7 @@ tasks:
     deps:
       - compile.linux-amd64
       - compile.darwin-arm64
+      - compile.local
 
   test:
     desc: Runs tests
