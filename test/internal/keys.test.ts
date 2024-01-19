@@ -174,14 +174,14 @@ describe("internal/keys", () => {
         it("encrypts a file", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
-  
+
           stubReadFile(ptext);
           spyCommandBuilder.apply({
             out: ctext,
           });
           const result = await op.encrypt("secrets.env");
           expect(result).to.equal("k8s/env/testing/secrets.env.sops");
-  
+
           expect(spyPublicKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
             "k8s/env/testing/secrets.env",
@@ -195,14 +195,14 @@ describe("internal/keys", () => {
         it("encrypts a file 'raw'", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
-  
+
           stubReadFile(ptext);
           spyCommandBuilder.apply({
             out: ctext,
           });
           const result = await op.encrypt("k8s/env/testing/secrets.env", true);
           expect(result).to.equal("k8s/env/testing/secrets.env.sops");
-  
+
           expect(spyPublicKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
             "k8s/env/testing/secrets.env",
@@ -219,14 +219,14 @@ describe("internal/keys", () => {
         it("decrypts a file", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
-  
+
           stubReadFile(ctext);
           spyCommandBuilder.apply({
             out: ptext,
           });
           const result = await op.decrypt("secrets.env");
           expect(result).to.equal("k8s/env/testing/secrets.env");
-  
+
           expect(spyPrivateKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
             "k8s/env/testing/secrets.env.sops",
@@ -240,14 +240,17 @@ describe("internal/keys", () => {
         it("decrypts a file 'raw'", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
-  
+
           stubReadFile(ctext);
           spyCommandBuilder.apply({
             out: ptext,
           });
-          const result = await op.decrypt("k8s/env/testing/secrets.env.sops", true);
+          const result = await op.decrypt(
+            "k8s/env/testing/secrets.env.sops",
+            true,
+          );
           expect(result).to.equal("k8s/env/testing/secrets.env");
-  
+
           expect(spyPrivateKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
             "k8s/env/testing/secrets.env.sops",

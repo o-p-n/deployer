@@ -7,7 +7,7 @@ import { type WalkEntry } from "deno_std/fs/mod.ts";
 import { basename, dirname, join } from "deno_std/path/mod.ts";
 
 import { KeyOp } from "../../src/internal/keys.ts";
-import { _internals, ApplyOpts, Applier } from "../../src/internal/k8s.ts";
+import { _internals, Applier, ApplyOpts } from "../../src/internal/k8s.ts";
 
 describe("internal/k8s", () => {
   describe("Applier", () => {
@@ -25,7 +25,7 @@ describe("internal/k8s", () => {
 
     beforeEach(() => {
       spyCwd = mock.stub(_internals, "cwd", () => ("/devel/module"));
-      spyRelative = mock.stub(_internals, "relative", (_src, dst) => (dst));
+      spyRelative = mock.stub(_internals, "relative", (_src, dst) => dst);
     });
 
     afterEach(() => {
@@ -72,15 +72,16 @@ describe("internal/k8s", () => {
         spyExpandGlob = mock.stub(
           _internals,
           "expandGlob",
-          () => (asyncIterable[Symbol.asyncIterator]())
+          () => (asyncIterable[Symbol.asyncIterator]()),
         );
         spyKeyOpDecrypt = mock.stub(
           KeyOp.prototype,
           "decrypt",
-          (file: string) => Promise.resolve(join(
-            dirname(file),
-            basename(file, ".sops"),
-          )),
+          (file: string) =>
+            Promise.resolve(join(
+              dirname(file),
+              basename(file, ".sops"),
+            )),
         );
       }
 
@@ -145,8 +146,10 @@ describe("internal/k8s", () => {
 
       afterEach(() => {
         spyDecrypt && !spyDecrypt.restored && spyDecrypt.restore();
-        spyApplyKustomize && !spyApplyKustomize.restored && spyApplyKustomize.restore();
-        spyVerifyKustomize && !spyVerifyKustomize.restored && spyVerifyKustomize.restore();
+        spyApplyKustomize && !spyApplyKustomize.restored &&
+          spyApplyKustomize.restore();
+        spyVerifyKustomize && !spyVerifyKustomize.restored &&
+          spyVerifyKustomize.restore();
         spyCleanup && !spyCleanup.restored && spyCleanup.restore();
       });
 
@@ -158,11 +161,19 @@ describe("internal/k8s", () => {
       });
 
       function stubBootstrapExists() {
-        spyExists = mock.stub(_internals, "exists", () => Promise.resolve(true));
+        spyExists = mock.stub(
+          _internals,
+          "exists",
+          () => Promise.resolve(true),
+        );
       }
 
       function stubBootstrapMissing() {
-        spyExists = mock.stub(_internals, "exists", () => Promise.resolve(false));
+        spyExists = mock.stub(
+          _internals,
+          "exists",
+          () => Promise.resolve(false),
+        );
       }
 
       it("calls the submethods (no bootstrap)", async () => {

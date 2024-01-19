@@ -35,7 +35,7 @@ export class Applier {
   }
 
   get dirty() {
-    return [ ...this.#dirty ];
+    return [...this.#dirty];
   }
 
   async decrypt() {
@@ -56,7 +56,7 @@ export class Applier {
 
     await $`kubectl --context=${env} apply --wait -k ${path}`
       .printCommand();
-    
+
     await this.verifyKustomize(path);
   }
 
@@ -75,7 +75,9 @@ export class Applier {
     } else {
       // TODO: configurable delay?
       const elapse = 20 * 1000;
-      console.log(`waiting for ${formatDuration(elapse, { ignoreZero: true })}`);
+      console.log(
+        `waiting for ${formatDuration(elapse, { ignoreZero: true })}`,
+      );
       await delay(elapse);
     }
   }
