@@ -4,6 +4,7 @@ import { Command } from "cliffy/command/mod.ts";
 
 import { GlobalOpts } from "../internal/global.ts";
 import { KeyOp } from "../internal/keys.ts";
+import { Applier, ApplyOpts } from "../internal/k8s.ts";
 
 export const _internals = {
   createKeyOp,
@@ -23,15 +24,8 @@ export function applyCommand(global: Command<GlobalOpts>): Command<GlobalOpts> {
     .reset();
 }
 
-interface ApplyOpts extends GlobalOpts {
-  bootstrap: unknown;
-}
-function handler(_config: ApplyOpts) {
-  // decrypt env secrets
-  // apply bootstrap (if requested)
-  // verify bootstrap applied
-  // apply {env}
-  // verify {env} applied
-  // cleanup?
-  console.log(_config);
+async function handler(opts: ApplyOpts) {
+  const k8s = new Applier(opts);
+
+  await k8s.execute();
 }
