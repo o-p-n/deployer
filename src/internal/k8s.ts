@@ -11,6 +11,7 @@ import { KeyOp } from "./keys.ts";
 
 export const _internals = {
   cwd: Deno.cwd,
+  delay,
   exists,
   relative,
   remove: Deno.remove,
@@ -65,7 +66,7 @@ export class Applier {
 
     // look for `apply-ready.sh`
     const checkCmd = join(path, "apply-ready.sh");
-    const checkCmdPresent = await exists(checkCmd, {
+    const checkCmdPresent = await _internals.exists(checkCmd, {
       isFile: true,
     });
     if (checkCmdPresent) {
@@ -78,15 +79,16 @@ export class Applier {
       console.log(
         `waiting for ${formatDuration(elapse, { ignoreZero: true })}`,
       );
-      await delay(elapse);
+      await _internals.delay(elapse);
     }
   }
 
   async cleanup() {
     for (const path of this.#dirty) {
       console.log(`deleting ${path}`);
-      await Deno.remove(path);
+      await _internals.remove(path);
     }
+    this.#dirty = [];
   }
 
   async execute() {

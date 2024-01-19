@@ -1,7 +1,7 @@
 /** */
 
 import { afterEach, beforeEach, describe, it } from "deno_std/testing/bdd.ts";
-import { expect, mock } from "../mocked.ts";
+import { CommandBuilderStubber, expect, mock } from "../mocked.ts";
 
 import { type WalkEntry } from "deno_std/fs/mod.ts";
 import { basename, dirname, join } from "deno_std/path/mod.ts";
@@ -50,6 +50,16 @@ describe("internal/k8s", () => {
     });
 
     describe(".decrypt()", () => {
+      let spyRemove: mock.Spy;
+
+      beforeEach(() => {
+        spyRemove = mock.stub(_internals, "remove");
+      });
+
+      afterEach(() => {
+        spyRemove && !spyRemove.restored && spyRemove.restore();
+      });
+
       function stubGlob(...found: string[]) {
         const asyncIterable = {
           entries: found.map((v) => {
@@ -85,7 +95,7 @@ describe("internal/k8s", () => {
         );
       }
 
-      it("decrypts single found", async () => {
+      it("decrypts single found (with cleanup)", async () => {
         stubGlob("k8s/env/testing/secrets.env.sops");
 
         const applier = new Applier(opts);
@@ -98,8 +108,14 @@ describe("internal/k8s", () => {
           "k8s/env/testing/secrets.env.sops",
           true,
         ]);
+
+        await applier.cleanup();
+        expect(spyRemove).to.have.been.deep.calledWith([
+          "k8s/env/testing/secrets.env",
+        ]);
+        expect(applier.dirty).to.deep.equal([]);
       });
-      it("decrypts all found", async () => {
+      it("decrypts all found (with cleanup)", async () => {
         stubGlob(
           "k8s/env/testing/secrets.env.sops",
           "k8s/env/testing/private.key.sops",
@@ -126,8 +142,21 @@ describe("internal/k8s", () => {
           "k8s/env/testing/privacy.txt.sops",
           true,
         ]);
+
+        await applier.cleanup();
+        expect(spyRemove).to.have.been.called(3);
+        expect(spyRemove).to.have.been.deep.calledWith([
+          "k8s/env/testing/secrets.env",
+        ]);
+        expect(spyRemove).to.have.been.deep.calledWith([
+          "k8s/env/testing/private.key",
+        ]);
+        expect(spyRemove).to.have.been.deep.calledWith([
+          "k8s/env/testing/privacy.txt",
+        ]);
+        expect(applier.dirty).to.deep.equal([]);
       });
-      it("decrypts nothing", async () => {
+      it("decrypts nothing (with cleanup)", async () => {
         stubGlob();
 
         const applier = new Applier(opts);
@@ -135,6 +164,89 @@ describe("internal/k8s", () => {
         expect(applier.dirty).to.deep.equal([]);
 
         expect(spyKeyOpDecrypt).to.not.have.been.called();
+
+        await applier.cleanup();
+        expect(spyRemove).to.have.not.been.called();
+        expect(applier.dirty).to.deep.equal([]);
+      });
+    });
+
+    describe(".applyKustomize()", () => {
+      const spyCommandBuilder = new CommandBuilderStubber();
+      let spyVerifyKustomize: mock.Spy;
+
+      beforeEach(() => {
+        spyVerifyKustomize = mock.stub(Applier.prototype, "verifyKustomize");
+      });
+
+      afterEach(() => {
+        spyCommandBuilder.restore();
+        spyVerifyKustomize && !spyVerifyKustomize.restored &&
+          spyVerifyKustomize.restore();
+      });
+
+      it("calls customize for the given path", async () => {
+        const applier = new Applier(opts);
+
+        spyCommandBuilder.apply({});
+        await applier.applyKustomize("k8s/env/testing");
+        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+        expect(spyVerifyKustomize).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+        ]);
+      });
+    });
+
+    describe(".verifyKustomize", () => {
+      const spyCommandBuilder = new CommandBuilderStubber();
+
+      let spyDelay: mock.Spy;
+      let spyExists: mock.Spy;
+
+      beforeEach(() => {
+        spyDelay = mock.stub(_internals, "delay");
+      });
+
+      afterEach(() => {
+        spyDelay && !spyDelay.restored && spyDelay.restore();
+        spyExists && !spyExists.restored && spyExists.restore();
+      });
+
+      function stubCheckCmd(found: boolean) {
+        spyExists = mock.stub(
+          _internals,
+          "exists",
+          () => Promise.resolve(found),
+        );
+      }
+
+      it("verifies via check command", async () => {
+        const applier = new Applier(opts);
+
+        stubCheckCmd(true);
+        spyCommandBuilder.apply({});
+        await applier.verifyKustomize("k8s/env/testing");
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing/apply-ready.sh",
+          { isFile: true },
+        ]);
+        expect(spyCommandBuilder.stub).to.have.been.called();
+        expect(spyDelay).to.not.have.been.called();
+      });
+      it("'verifies' via delay", async () => {
+        const applier = new Applier(opts);
+
+        stubCheckCmd(false);
+        spyCommandBuilder.apply({});
+        await applier.verifyKustomize("k8s/env/testing");
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing/apply-ready.sh",
+          { isFile: true },
+        ]);
+        expect(spyCommandBuilder.stub).to.not.have.been.called();
+        expect(spyDelay).to.have.been.deep.calledWith([
+          20 * 1000,
+        ]);
       });
     });
 
@@ -176,7 +288,7 @@ describe("internal/k8s", () => {
         );
       }
 
-      it("calls the submethods (no bootstrap)", async () => {
+      it("calls the submethods (no bootstrapping)", async () => {
         stubBootstrapExists();
         const applier = new Applier(opts);
         await applier.execute();
