@@ -39,7 +39,7 @@ tasks:
       - |
         deno compile \
           --allow-read --allow-write \
-          --allow-env --allow-run \
+          --allow-env --allow-run --allow-sys \
           --target {{ .TARGET }} --output target/{{ .TARGET }}/deployer \
           ./src/main.ts
 
@@ -51,7 +51,7 @@ tasks:
     - task: compile.target
       vars:
         TARGET: aarch64-apple-darwin
-  build:
+  compile:
     desc: Compiles all platform binaries
     deps:
       - compile.linux-amd64
@@ -69,7 +69,7 @@ tasks:
       - |
         deno test \
           --allow-read --allow-write \
-          --allow-env --allow-run \
+          --allow-env --allow-run --allow-sys \
           --coverage 
 
   coverage.html:
