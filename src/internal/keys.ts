@@ -1,6 +1,6 @@
 /** */
 
-import { join, resolve } from "deno_std/path/mod.ts";
+import { join, relative, resolve } from "deno_std/path/mod.ts";
 import $ from "dax";
 
 import { GlobalOpts } from "./global.ts";
@@ -68,44 +68,53 @@ export class KeyOp {
     return value;
   }
 
-  async encrypt(file: string) {
+  async encrypt(file: string, direct = false) {
     const { env } = this.config;
-
-    console.log(`encrypting ${file} for ${env} ...`);
-
-    const srcPath = _internals.resolve("k8s", "env", env, file);
-    const src = await _internals.readFile(srcPath);
-
     const pubKey = await this.getPublicKey();
+
+    const srcPath = relative(
+      Deno.cwd(),
+      direct ? file : _internals.resolve("k8s", "env", env, file),
+    );
+    const dstPath = `${srcPath}.sops`;
+    console.log(`🔒 encrypting ${srcPath} for ${env}`);
+
+    const src = await _internals.readFile(srcPath);
     const result = await $`sops --encrypt /dev/stdin`
+      .printCommand()
       .stdin(src)
+      .stdout("piped")
       .env({
         "SOPS_AGE_RECIPIENTS": pubKey,
       });
-
-    const dstPath = `${srcPath}.sops`;
     await _internals.writeFile(dstPath, result.stdoutBytes);
 
-    console.log(`... encrypted ${srcPath} → ${dstPath}`);
+    return dstPath;
   }
 
-  async decrypt(file: string) {
+  async decrypt(file: string, direct = false) {
     const { env } = this.config;
-
-    console.log(`decrypting ${file} for ${env}`);
-    const dstPath = _internals.resolve("k8s", "env", env, file);
-
-    const srcPath = `${dstPath}.sops`;
-    const src = await _internals.readFile(srcPath);
-
     const prvKey = await this.getPrivateKey();
+
+    const dstPath = relative(
+      Deno.cwd(),
+      direct
+        ? file.substring(0, file.length - 5)
+        : _internals.resolve("k8s", "env", env, file),
+    );
+    const srcPath = `${dstPath}.sops`;
+    console.log(`🔓 decrypting ${dstPath} for ${env}`);
+
+    const src = await _internals.readFile(srcPath);
     const result = await $`sops --decrypt /dev/stdin`
+      .printCommand()
       .stdin(src)
+      .stdout("piped")
       .env({
         "SOPS_AGE_KEY": prvKey,
       });
-
     await _internals.writeFile(dstPath, result.stdoutBytes);
-    console.debug(`... decrypted ${srcPath} → ${dstPath}`);
+
+    return dstPath;
   }
 }

@@ -170,45 +170,97 @@ describe("internal/keys", () => {
         spyPrivateKey && !spyPrivateKey.restored && spyPrivateKey.restore();
       });
 
-      it("encrypts a file", async () => {
-        const ptext = new TextEncoder().encode("plaintext");
-        const ctext = new TextEncoder().encode("ciphertext");
+      describe("encrypting", () => {
+        it("encrypts a file", async () => {
+          const ptext = new TextEncoder().encode("plaintext");
+          const ctext = new TextEncoder().encode("ciphertext");
 
-        stubReadFile(ptext);
-        spyCommandBuilder.apply({
-          out: ctext,
+          stubReadFile(ptext);
+          spyCommandBuilder.apply({
+            out: ctext,
+          });
+          const result = await op.encrypt("secrets.env");
+          expect(result).to.equal("k8s/env/testing/secrets.env.sops");
+
+          expect(spyPublicKey).to.have.been.deep.calledWith([]);
+          expect(spyReadFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env",
+          ]);
+          expect(spyWriteFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env.sops",
+            ctext,
+          ]);
+          expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
         });
-        await op.encrypt("secrets.env");
+        it("encrypts a file 'raw'", async () => {
+          const ptext = new TextEncoder().encode("plaintext");
+          const ctext = new TextEncoder().encode("ciphertext");
 
-        expect(spyPublicKey).to.have.been.deep.calledWith([]);
-        expect(spyReadFile).to.have.been.deep.calledWith([
-          "k8s/env/testing/secrets.env",
-        ]);
-        expect(spyWriteFile).to.have.been.deep.calledWith([
-          "k8s/env/testing/secrets.env.sops",
-          ctext,
-        ]);
-        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+          stubReadFile(ptext);
+          spyCommandBuilder.apply({
+            out: ctext,
+          });
+          const result = await op.encrypt("k8s/env/testing/secrets.env", true);
+          expect(result).to.equal("k8s/env/testing/secrets.env.sops");
+
+          expect(spyPublicKey).to.have.been.deep.calledWith([]);
+          expect(spyReadFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env",
+          ]);
+          expect(spyWriteFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env.sops",
+            ctext,
+          ]);
+          expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+        });
       });
-      it("decrypts a file", async () => {
-        const ptext = new TextEncoder().encode("plaintext");
-        const ctext = new TextEncoder().encode("ciphertext");
 
-        stubReadFile(ctext);
-        spyCommandBuilder.apply({
-          out: ptext,
+      describe("decrypting", () => {
+        it("decrypts a file", async () => {
+          const ptext = new TextEncoder().encode("plaintext");
+          const ctext = new TextEncoder().encode("ciphertext");
+
+          stubReadFile(ctext);
+          spyCommandBuilder.apply({
+            out: ptext,
+          });
+          const result = await op.decrypt("secrets.env");
+          expect(result).to.equal("k8s/env/testing/secrets.env");
+
+          expect(spyPrivateKey).to.have.been.deep.calledWith([]);
+          expect(spyReadFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env.sops",
+          ]);
+          expect(spyWriteFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env",
+            ptext,
+          ]);
+          expect(spyCommandBuilder.stub).to.have.been.called(1);
         });
-        await op.decrypt("secrets.env");
+        it("decrypts a file 'raw'", async () => {
+          const ptext = new TextEncoder().encode("plaintext");
+          const ctext = new TextEncoder().encode("ciphertext");
 
-        expect(spyPrivateKey).to.have.been.deep.calledWith([]);
-        expect(spyReadFile).to.have.been.deep.calledWith([
-          "k8s/env/testing/secrets.env.sops",
-        ]);
-        expect(spyWriteFile).to.have.been.deep.calledWith([
-          "k8s/env/testing/secrets.env",
-          ptext,
-        ]);
-        expect(spyCommandBuilder.stub).to.have.been.called(1);
+          stubReadFile(ctext);
+          spyCommandBuilder.apply({
+            out: ptext,
+          });
+          const result = await op.decrypt(
+            "k8s/env/testing/secrets.env.sops",
+            true,
+          );
+          expect(result).to.equal("k8s/env/testing/secrets.env");
+
+          expect(spyPrivateKey).to.have.been.deep.calledWith([]);
+          expect(spyReadFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env.sops",
+          ]);
+          expect(spyWriteFile).to.have.been.deep.calledWith([
+            "k8s/env/testing/secrets.env",
+            ptext,
+          ]);
+          expect(spyCommandBuilder.stub).to.have.been.called(1);
+        });
       });
     });
   });
