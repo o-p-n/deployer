@@ -45,6 +45,9 @@ Using `deployer` requires the following to be installed and available in your `$
 * [`kubectl`](https://kubectl.docs.kubernetes.io/) (>= 1.19)
 * [`sops`](https://github.com/getsops/sops) (>= 3.8)
 
+Optionally, the following could be useful (but are not required nor used by `deployer`):
+* [`age`](https://age-encryption.org/) (>= 1.1) (specifically `age-keygen` for generating encryption keys)
+
 ### Resource Structure
 
 For components, `deployer` expects [Kustomize](https://kustomize.io/) directories within following directory structures:
@@ -73,7 +76,7 @@ Using `deployer` requires the `kubectl` configuration file has a context defined
 
 ### Secrets Management
 
-Any secrets needed by the component can be inline with the other resources, encrypted using `sops`.  `deployer` will decrypt those secrets before applying the kustomization.  The secrets are assumed to be encrypted using [`age`](https://age-encryption.org) keys, stored in a pair of files per environment:
+Any secrets needed by the component can be inline with the other resources, encrypted using `sops`.  `deployer` will decrypt those secrets before applying the kustomization.  The secrets are assumed to be encrypted using [`age`](https://age-encryption.org/) keys, stored in a pair of files per environment:
 
 * `{env}.key` — Age private key to decrypt `{env}`'s secrets
 * `{env}.key.pub` — Age public key to encrypt `{env}`'s secrets
