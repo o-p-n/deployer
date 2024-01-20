@@ -1,5 +1,8 @@
 version: "3"
 
+vars:
+  VERSION: '{{ default "latest" .VERSION }}'
+
 tasks:
   clean.target:
     desc:
@@ -20,8 +23,11 @@ tasks:
     desc: Cleans intermediates
     deps:
       - clean.all-targets
-      - clean.cache
       - clean.coverage
+  clean-all:
+    desc: Cleans all generated files, including local caches
+    cmds:
+      - git clean -dfx .
 
   compile.target:
     requires:
@@ -72,11 +78,47 @@ tasks:
       - compile.darwin-arm64
       - compile.local
 
+  dist.target:
+    requires:
+      vars:
+        - TARGET
+    sources:
+      - target/{{ .TARGET }}/deployer
+    generates:
+      - target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz
+      - target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+    cmds:
+      - task: compile.target
+        vars:
+          TARGET: "{{ .TARGET }}"
+      - |
+        tar czf target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz \
+          -C target/{{ .TARGET }} \
+          deployer
+      - |
+        shasum -a 256 target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz > \
+          target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+
+  dist.linux-amd64:
+    - task: dist.target
+      vars:
+        TARGET: x86_64-unknown-linux-gnu
+  dist.darwin-arm64:
+    - task: dist.target
+      vars:
+        TARGET: aarch64-apple-darwin
+  distribute:
+    desc: Package binaries for distribution
+    deps:
+      - dist.linux-amd64
+      - dist.darwin-arm64
+
   test:
     desc: Runs tests
     sources:
-      - src/**.ts
-      - test/**.ts
+      - src/**/*.ts
+      - test/**/*.ts
+      - deno.*
     generates:
       - coverage/*.json
     cmds:
