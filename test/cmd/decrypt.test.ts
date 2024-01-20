@@ -9,8 +9,7 @@ import { globalCommand, GlobalOpts } from "../../src/internal/global.ts";
 import { _internals, decryptCommand } from "../../src/cmd/decrypt.ts";
 
 describe("cmd/decrypt", () => {
-  // deno-lint-ignore no-explicit-any
-  let global: any & Command;
+  let global: Command<GlobalOpts>;
 
   beforeEach(() => {
     global = globalCommand();

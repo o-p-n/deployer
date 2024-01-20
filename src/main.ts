@@ -8,6 +8,11 @@ import { encryptCommand } from "./cmd/encrypt.ts";
 import { decryptCommand } from "./cmd/decrypt.ts";
 import { GlobalOpts } from "./internal/global.ts";
 
+export const _internals = {
+  createCommand,
+  main: import.meta.main,
+};
+
 export function createCommand() {
   let cli: Command<GlobalOpts> = globalCommand();
   cli = applyCommand(cli);
@@ -17,6 +22,10 @@ export function createCommand() {
   return cli;
 }
 
-if (import.meta.main) {
-  await createCommand().parse();
+export async function main() {
+  if (_internals.main) {
+    await _internals.createCommand().parse();
+  }
 }
+
+await main();
