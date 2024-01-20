@@ -13,7 +13,6 @@ export type GlobalOpts = {
   identityDir: string;
 };
 
-// TODO: figure out how to get rid of any ...
 export function globalCommand(): Command<GlobalOpts> {
   const cmd = new Command()
     .name("deployer")
