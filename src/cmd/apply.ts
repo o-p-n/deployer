@@ -16,7 +16,7 @@ function createApplier(opts: ApplyOpts) {
 export function applyCommand(global: Command<GlobalOpts>): Command<GlobalOpts> {
   return global.command("apply")
     .description("apply resources for the given environment")
-    .option("--bootstrap, -b [bootstrap:boolean]", "also apply bootstrap", {
+    .option(" -b, --bootstrap [bootstrap:boolean]", "also apply bootstrap", {
       default: false,
     })
     .action(handler)
