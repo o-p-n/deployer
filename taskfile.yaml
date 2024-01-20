@@ -39,9 +39,23 @@ tasks:
       - |
         deno compile \
           --allow-read --allow-write \
-          --allow-env --allow-run \
+          --allow-env --allow-run --allow-sys \
           --target {{ .TARGET }} --output target/{{ .TARGET }}/deployer \
           ./src/main.ts
+
+  compile.local:
+    sources:
+      - src/**/*.ts
+    generates:
+      - target/deployer
+    cmds:
+      - mkdir -p target
+      - |
+        deno compile \
+        --allow-read --allow-write \
+        --allow-env --allow-run --allow-sys \
+        --output target/deployer \
+        ./src/main.ts
 
   compile.linux-amd64:
     - task: compile.target
@@ -51,11 +65,12 @@ tasks:
     - task: compile.target
       vars:
         TARGET: aarch64-apple-darwin
-  build:
+  compile:
     desc: Compiles all platform binaries
     deps:
       - compile.linux-amd64
       - compile.darwin-arm64
+      - compile.local
 
   test:
     desc: Runs tests
@@ -69,7 +84,7 @@ tasks:
       - |
         deno test \
           --allow-read --allow-write \
-          --allow-env --allow-run \
+          --allow-env --allow-run --allow-sys \
           --coverage 
 
   coverage.html:
