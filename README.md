@@ -8,6 +8,7 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
 
 - [USAGE](#usage)
   - [`apply` — Apply kustomizations](#apply--apply-kustomizations)
+  - [`encrypt` — Protect secrets](#encrypt--protect-secrets)
 - [SETTING UP](#setting-up)
   - [Dependencies](#dependencies)
   - [Resource Structure](#resource-structure)
@@ -28,14 +29,32 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
 ### `apply` — Apply kustomizations
 
 ```
+Usage: deployer apply --env <env>
+
   -h, --help                        - Show this help.
   -e, --env           <env>         - the environment to operate on                          (required)
   -I, --identity-dir  <identities>  - directory containing identities (public/private keys)
-  --bootstrap, -b     [bootstrap]   - also apply bootstrap
+  -b, --bootstrap                   - also apply bootstrap
 ```
 Applies the resources for the environment specified by `--env <env>`.  Any secrets for that environment are first decrypted.  If the environment has a `apply-ready.sh` script, it will be run after applying to wait and verify the resources are completely applied.
 
 If `--bootstrap` is specified and a `bootstrap` directory is found, those resources are deployed first.  If the bootstrap has a `apply-ready.sh` script, it will be run after applying the boostrapping to wait and verify the resources are completely applied.  **NOTE** that `bootstrap`-level secrets are not supported.
+
+### `encrypt` — Protect secrets
+
+```
+Usage: deployer encrypt <file> --env <env>
+
+  -h, --help                        - Show this help.
+  -e, --env           <env>         - the environment to operate on                          (required)
+  -I, --identity-dir  <identities>  - directory containing identities (public/private keys)
+```
+
+Encrypts the given data file for the given environment.  The data file is assumed to be located in the environment-specific directory; e.g., the file `secrets.env` for the `local` environment exists in `k8s/env/local/secrets.env`.
+
+The file is encrypted with the public key for the given environment (e.g., the public key `local.key.pub` for `local`).
+
+The resulting encrypted file retains the same name as the original file plus the extension `.sops` appended; e.g., encrypting `secrets.env` results in the output file `secrets.env.sops`.
 
 ## SETTING UP
 
