@@ -6,11 +6,36 @@
 
 A command-line utility for deploying kubernetes resources for [outer-planes.net](https://outer-planes.net/).  It applies a named environment's resources, decrypting senstive to be included and optionally waiting for that environment's custom readiness checks to complete.
 
+- [USAGE](#usage)
+  - [`apply` — Apply kustomizations](#apply--apply-kustomizations)
 - [SETTING UP](#setting-up)
   - [Dependencies](#dependencies)
   - [Resource Structure](#resource-structure)
   - [`kubectl` Assumptions](#kubectl-assumptions)
   - [Secrets Management](#secrets-management)
+
+## USAGE
+
+`deployer` has various sub-commands to perform resource management.
+
+```
+  help     [command]  - Show this help or the help of a sub-command.
+  apply               - apply resources for the given environment
+  encrypt  <file>     - encrypts a data file for the given environment
+  decrypt  <file>     - decrypts a data file for the given environment
+```
+
+### `apply` — Apply kustomizations
+
+```
+  -h, --help                        - Show this help.
+  -e, --env           <env>         - the environment to operate on                          (required)
+  -I, --identity-dir  <identities>  - directory containing identities (public/private keys)
+  --bootstrap, -b     [bootstrap]   - also apply bootstrap
+```
+Applies the resources for the environment specified by `--env <env>`.  Any secrets for that environment are first decrypted.  If the environment has a `apply-ready.sh` script, it will be run after applying to wait and verify the resources are completely applied.
+
+If `--bootstrap` is specified and a `bootstrap` directory is found, those resources are deployed first.  If the bootstrap has a `apply-ready.sh` script, it will be run after applying the boostrapping to wait and verify the resources are completely applied.  **NOTE** that `bootstrap`-level secrets are not supported.
 
 ## SETTING UP
 
