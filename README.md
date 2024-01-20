@@ -1,5 +1,9 @@
 # O-P-N INFRASTRUCTURE DEPLOYER
 
+[![GHA CI](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml/badge.svg)](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/o-p-n/deployer/graph/badge.svg?token=PAI2ZvxpI0)](https://codecov.io/gh/o-p-n/deployer)
+
+----
+
 A command-line utility for deploying kubernetes resources for [outer-planes.net](https://outer-planes.net/).  It applies a named environment's resources, decrypting senstive to be included and optionally waiting for that environment's custom readiness checks to complete.
 
 - [SETTING UP](#setting-up)
