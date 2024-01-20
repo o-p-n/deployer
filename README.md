@@ -16,7 +16,7 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
 
 ## USAGE
 
-`deployer` has various sub-commands to perform resource management.
+`deployer` has various sub-commands to perform resource management.  Using `deployer` requires [preparation](#setting-up) to operate successfully.
 
 ```
   help     [command]  - Show this help or the help of a sub-command.
