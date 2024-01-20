@@ -27,7 +27,7 @@ describe("main", () => {
 
       cmd = result.getCommand("decrypt");
       expect(cmd).to.exist();
-  
+
       cmd = result.getCommand("apply");
       expect(cmd).to.exist();
     });
