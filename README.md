@@ -1,6 +1,6 @@
 # O-P-N INFRASTRUCTURE DEPLOYER
 
-[![GHA CI](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml/badge.svg)](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/o-p-n/deployer/graph/badge.svg?token=PAI2ZvxpI0)](https://codecov.io/gh/o-p-n/deployer)
+[![GHA CI](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml?query=branch%3Amain) [![codecov](https://codecov.io/gh/o-p-n/deployer/graph/badge.svg?token=PAI2ZvxpI0)](https://codecov.io/gh/o-p-n/deployer)
 
 ----
 
@@ -10,6 +10,7 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
   - [Dependencies](#dependencies)
   - [Resource Structure](#resource-structure)
   - [`kubectl` Assumptions](#kubectl-assumptions)
+  - [Secrets Management](#secrets-management)
 
 ## SETTING UP
 
@@ -43,4 +44,13 @@ For a named environment, its directory contains a `kustomization.yaml` that load
 
 ### `kubectl` Assumptions
 
-Using `deployer` requires the `kubectl` configuration file in `${KUBECONFIG}` has a context defined for each named environment.
+Using `deployer` requires the `kubectl` configuration file has a context defined for each named environment.  It also expects any connectivity requirements (e.g., SSH forwarding) are established and ready before executing `deployer`.
+
+### Secrets Management
+
+Any secrets needed by the component can be inline with the other resources, encrypted using `sops`.  `deployer` will decrypt those secrets before applying the kustomization.  The secrets are assumed to be encrypted using [`age`](https://age-encryption.org) keys, stored in a pair of files per environment:
+
+* `{env}.key` — Age private key to decrypt `{env}`'s secrets
+* `{env}.key.pub` — Age public key to encrypt `{env}`'s secrets
+
+Those keypair files will be assumed to be in the current working directory, although that path can be customized using the environment variable `${DEPLOYER_IDENTITY_DIR}` or on the command-line with the `--identity-dir <path>` option.
