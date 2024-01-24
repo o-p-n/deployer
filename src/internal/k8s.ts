@@ -1,7 +1,5 @@
 /** */
 
-import { delay } from "deno_std/async/mod.ts";
-import { format as formatDuration } from "deno_std/fmt/duration.ts";
 import { exists, expandGlob } from "deno_std/fs/mod.ts";
 import { join, relative } from "deno_std/path/mod.ts";
 import $ from "dax";
@@ -11,7 +9,6 @@ import { KeyOp } from "./keys.ts";
 
 export const _internals = {
   cwd: Deno.cwd,
-  delay,
   exists,
   relative,
   remove: Deno.remove,
@@ -73,13 +70,6 @@ export class Applier {
       await $`${checkCmd}`
         .printCommand()
         .env({ ENV: env });
-    } else {
-      // TODO: configurable delay?
-      const elapse = 20 * 1000;
-      console.log(
-        `waiting for ${formatDuration(elapse, { ignoreZero: true })}`,
-      );
-      await _internals.delay(elapse);
     }
   }
 

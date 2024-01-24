@@ -200,15 +200,9 @@ describe("internal/k8s", () => {
     describe(".verifyKustomize", () => {
       const spyCommandBuilder = new CommandBuilderStubber();
 
-      let spyDelay: mock.Spy;
       let spyExists: mock.Spy;
 
-      beforeEach(() => {
-        spyDelay = mock.stub(_internals, "delay");
-      });
-
       afterEach(() => {
-        spyDelay && !spyDelay.restored && spyDelay.restore();
         spyExists && !spyExists.restored && spyExists.restore();
       });
 
@@ -231,9 +225,8 @@ describe("internal/k8s", () => {
           { isFile: true },
         ]);
         expect(spyCommandBuilder.stub).to.have.been.called();
-        expect(spyDelay).to.not.have.been.called();
       });
-      it("'verifies' via delay", async () => {
+      it("verify does nothing if missing check command", async () => {
         const applier = new Applier(opts);
 
         stubCheckCmd(false);
@@ -244,9 +237,6 @@ describe("internal/k8s", () => {
           { isFile: true },
         ]);
         expect(spyCommandBuilder.stub).to.not.have.been.called();
-        expect(spyDelay).to.have.been.deep.calledWith([
-          20 * 1000,
-        ]);
       });
     });
 
