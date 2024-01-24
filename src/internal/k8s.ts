@@ -94,22 +94,37 @@ export class Applier {
   async execute() {
     const { bootstrap, env } = this.config;
 
-    await this.decrypt();
-
-    // apply bootstrap, if requested
-    const doBootstrap = bootstrap && await _internals.exists("k8s/bootstrap", {
+    // check requested environment exists
+    const doit = await _internals.exists(`k8s/env/${env}`, {
       isDirectory: true,
       isReadable: true,
     });
-    if (doBootstrap) {
-      console.log("apply bootstrap");
-      await this.applyKustomize("k8s/bootstrap");
+    if (!doit) {
+      console.log(`no resources for ${env}!`);
+      // TODO: error?!
+      return;
     }
 
-    // apply environment
-    console.log(`apply ${env}`);
-    await this.applyKustomize(`k8s/env/${env}`);
+    try {
+      // decrypt secrets (if any)
+      await this.decrypt();
 
-    await this.cleanup();
+      // apply bootstrap, if requested
+      const doBootstrap = bootstrap && await _internals.exists("k8s/bootstrap", {
+        isDirectory: true,
+        isReadable: true,
+      });
+      if (doBootstrap) {
+        console.log("apply bootstrap");
+        await this.applyKustomize("k8s/bootstrap");
+      }
+
+      // apply environment
+      console.log(`apply ${env}`);
+      await this.applyKustomize(`k8s/env/${env}`);
+    } finally {
+      // clean everything up
+      await this.cleanup();
+    }
   }
 }
