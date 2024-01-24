@@ -262,30 +262,37 @@ describe("internal/k8s", () => {
         spyCleanup = mock.stub(Applier.prototype, "cleanup");
       });
 
-      function stubBootstrapExists() {
+      function stubExists(paths: string[]) {
+        const fn = (path: string | URL) => {
+          if (paths.includes(path.toString())) {
+            return Promise.resolve(true);
+          }
+          return Promise.resolve(false);
+        };
         spyExists = mock.stub(
           _internals,
           "exists",
-          () => Promise.resolve(true),
-        );
-      }
-
-      function stubBootstrapMissing() {
-        spyExists = mock.stub(
-          _internals,
-          "exists",
-          () => Promise.resolve(false),
+          fn,
         );
       }
 
       it("calls the submethods (no bootstrapping)", async () => {
-        stubBootstrapExists();
+        stubExists([
+          "k8s/bootstrap",
+          "k8s/env/testing",
+        ]);
         const applier = new Applier(opts);
         await applier.execute();
 
         expect(spyDecrypt).to.have.been.called(1);
 
-        expect(spyExists).to.have.not.been.called();
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+          {
+            isDirectory: true,
+            isReadable: true,
+          },
+        ]);
 
         expect(spyApplyKustomize).to.have.been.called(1);
         expect(spyApplyKustomize).to.have.been.deep.calledWith([
@@ -295,7 +302,10 @@ describe("internal/k8s", () => {
         expect(spyCleanup).to.have.been.called(1);
       });
       it("calls the submethods (with bootstrap, and exists)", async () => {
-        stubBootstrapExists();
+        stubExists([
+          "k8s/bootstrap",
+          "k8s/env/testing",
+        ]);
         const applier = new Applier({
           ...opts,
           bootstrap: true,
@@ -304,6 +314,13 @@ describe("internal/k8s", () => {
 
         expect(spyDecrypt).to.have.been.called(1);
 
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+          {
+            isDirectory: true,
+            isReadable: true,
+          },
+        ]);
         expect(spyExists).to.have.been.deep.calledWith([
           "k8s/bootstrap",
           {
@@ -323,7 +340,9 @@ describe("internal/k8s", () => {
         expect(spyCleanup).to.have.been.called(1);
       });
       it("calls the submethods (with bootstrap, but missing)", async () => {
-        stubBootstrapMissing();
+        stubExists([
+          "k8s/env/testing",
+        ]);
         const applier = new Applier({
           ...opts,
           bootstrap: true,
@@ -332,6 +351,13 @@ describe("internal/k8s", () => {
 
         expect(spyDecrypt).to.have.been.called(1);
 
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+          {
+            isDirectory: true,
+            isReadable: true,
+          },
+        ]);
         expect(spyExists).to.have.been.deep.calledWith([
           "k8s/bootstrap",
           {
@@ -345,6 +371,57 @@ describe("internal/k8s", () => {
           "k8s/env/testing",
         ]);
 
+        expect(spyCleanup).to.have.been.called(1);
+      });
+      it("calls some of the submethods (missing env)", async () => {
+        stubExists([
+          "k8s/bootstrap",
+        ]);
+        const applier = new Applier({
+          ...opts,
+          bootstrap: true,
+        });
+        await applier.execute();
+
+        expect(spyDecrypt).to.have.not.been.called();
+
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+          {
+            isDirectory: true,
+            isReadable: true,
+          },
+        ]);
+
+        expect(spyApplyKustomize).to.have.not.been.called();
+
+        expect(spyCleanup).to.have.not.been.called();
+      });
+      it("calls cleanup on error", async () => {
+        spyDecrypt.restore();
+        spyDecrypt = mock.stub(Applier.prototype, "decrypt", () => {
+          return Promise.reject(new Error());
+        });
+        stubExists([
+          "k8s/env/testing",
+        ]);
+        const applier = new Applier({
+          ...opts,
+          bootstrap: true,
+        });
+        await expect(applier.execute()).to.be.rejected();
+
+        expect(spyExists).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+          {
+            isDirectory: true,
+            isReadable: true,
+          },
+        ]);
+        // does not get to bootstrap check ...
+
+        expect(spyDecrypt).to.have.been.called(1);
+        expect(spyApplyKustomize).to.not.have.been.called();
         expect(spyCleanup).to.have.been.called(1);
       });
     });
