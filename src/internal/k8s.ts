@@ -110,10 +110,11 @@ export class Applier {
       await this.decrypt();
 
       // apply bootstrap, if requested
-      const doBootstrap = bootstrap && await _internals.exists("k8s/bootstrap", {
-        isDirectory: true,
-        isReadable: true,
-      });
+      const doBootstrap = bootstrap &&
+        await _internals.exists("k8s/bootstrap", {
+          isDirectory: true,
+          isReadable: true,
+        });
       if (doBootstrap) {
         console.log("apply bootstrap");
         await this.applyKustomize("k8s/bootstrap");

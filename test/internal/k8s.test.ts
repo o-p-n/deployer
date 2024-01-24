@@ -283,7 +283,7 @@ describe("internal/k8s", () => {
           _internals,
           "exists",
           fn,
-        )
+        );
       }
 
       it("calls the submethods (no bootstrapping)", async () => {
@@ -367,7 +367,7 @@ describe("internal/k8s", () => {
             isDirectory: true,
             isReadable: true,
           },
-        ])
+        ]);
         expect(spyExists).to.have.been.deep.calledWith([
           "k8s/bootstrap",
           {
@@ -401,7 +401,7 @@ describe("internal/k8s", () => {
             isDirectory: true,
             isReadable: true,
           },
-        ])
+        ]);
 
         expect(spyApplyKustomize).to.have.not.been.called();
 
