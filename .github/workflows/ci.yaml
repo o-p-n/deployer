@@ -113,10 +113,10 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          if [[ "${{ inputs.no-build-sha }}" ]] ; then
+          if [[ "${{ inputs.no-build-sha }}" == "true" ]] ; then
             suffix=""
           else
-            suffix="${{ github.sha }}"
+            suffix="+${{ github.sha }}"
           fi
           version="$(cat package.json | jq -r '.version')${suffix}"
           echo "version=${version}" >> "${GITHUB_OUTPUT}"
