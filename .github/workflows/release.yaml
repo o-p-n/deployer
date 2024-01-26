@@ -25,8 +25,19 @@ jobs:
           private-key: ${{ secrets.RELEASE_MANAGER_PRIVATE_KEY }}
       - name: "Check out code"
         uses: actions/checkout@v4
+      - name: Download distribution
+        uses: actions/download-artifact@v4
+        with:
+          path: target
+          github-token: ${{ steps.gentoken.outputs.token }}
       - name: "Create/update release PR"
+        id: release
         uses: google-github-actions/release-please-action@v4
         with:
           token: ${{ steps.gentoken.outputs.token }}
-          skip-github-release: true
+      - name: Attach distribution to release
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ steps.gentoken.outputs.token }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} ./target/*.tar.gz*
