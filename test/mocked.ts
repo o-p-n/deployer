@@ -3,7 +3,7 @@
 import { expect, use } from "expecto/index.ts";
 import mocked, { mock } from "expecto/mocked.ts";
 
-import { Buffer } from "deno_std_209/io/buffer.ts";
+import { Buffer } from "deno_std/io/buffer.ts";
 import { CommandBuilder, CommandResult } from "dax";
 
 use(mocked);
