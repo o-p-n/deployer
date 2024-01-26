@@ -37,6 +37,7 @@ tasks:
         - TARGET
     sources:
       - "src/**"
+      - "deno.*"
     generates:
       - target/{{.TARGET}}/{{.PROJECT}}
     cmds:
@@ -54,6 +55,7 @@ tasks:
   compile.local:
     sources:
       - src/**/*.ts
+      - deno.*
     generates:
       - target/{{.PROJECT}}
     cmds:
