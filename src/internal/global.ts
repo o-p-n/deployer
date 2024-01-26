@@ -1,6 +1,7 @@
 /** */
 
 import { Command, HelpCommand } from "cliffy/command/mod.ts";
+import pkg from "../../package.json" with { type: "json" };
 
 export const _internals = {
   getEnv(key: string, def?: string): string | undefined {
@@ -15,7 +16,8 @@ export type GlobalOpts = {
 
 export function globalCommand(): Command<GlobalOpts> {
   const cmd = new Command()
-    .name("deployer")
+    .name(pkg.name)
+    .version(pkg.version)
     .description("Tool for deploying resources to outer-planes.net")
     .globalOption(
       "-e, --env <env:string>",
