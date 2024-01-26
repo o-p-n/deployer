@@ -81,7 +81,7 @@ jobs:
   distribute:
     name: "Create distribution"
     runs-on: ubuntu-22.04
-    # if: ${{ inputs.distribute }}
+    if: ${{ inputs.distribute }}
     needs:
       - checks
       - tests
