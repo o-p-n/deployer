@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   VERSION: '{{ default "latest" .VERSION }}'
+  PROJECT: '{{ default "o-p-n-deployer" .PROJECT }}'
 
 tasks:
   clean.target:
@@ -32,11 +33,12 @@ tasks:
   compile.target:
     requires:
       vars:
+        - PROJECT
         - TARGET
     sources:
       - "src/**"
     generates:
-      - target/{{ .TARGET }}/deployer
+      - target/{{ .TARGET }}/{{ .PROJECT }}
     cmds:
       - task: clean.target
         vars:
@@ -46,31 +48,33 @@ tasks:
         deno compile \
           --allow-read --allow-write \
           --allow-env --allow-run --allow-sys \
-          --target {{ .TARGET }} --output target/{{ .TARGET }}/deployer \
+          --target {{ .TARGET }} --output target/{{ .TARGET }}/{{ .PROJECT }} \
           ./src/main.ts
 
   compile.local:
     sources:
       - src/**/*.ts
     generates:
-      - target/deployer
+      - target/{{ .PROJECT }}
     cmds:
       - mkdir -p target
       - |
         deno compile \
         --allow-read --allow-write \
         --allow-env --allow-run --allow-sys \
-        --output target/deployer \
+        --output target/{{ .PROJECT }} \
         ./src/main.ts
 
   compile.linux-amd64:
     - task: compile.target
       vars:
         TARGET: x86_64-unknown-linux-gnu
+        PROJECT: '{{ .PROJECT }}'
   compile.darwin-arm64:
     - task: compile.target
       vars:
         TARGET: aarch64-apple-darwin
+        PROJECT: '{{ .PROJECT }}'
   compile:
     desc: Compiles all platform binaries
     deps:
@@ -83,21 +87,21 @@ tasks:
       vars:
         - TARGET
     sources:
-      - target/{{ .TARGET }}/deployer
+      - target/{{ .TARGET }}/{{ .PROJECT }}
     generates:
-      - target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz
-      - target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+      - target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz
+      - target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
     cmds:
       - task: compile.target
         vars:
           TARGET: "{{ .TARGET }}"
       - |
-        tar czf target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz \
+        tar czf target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz \
           -C target/{{ .TARGET }} \
-          deployer
+          {{ .PROJECT }}
       - |
-        shasum -a 256 target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz > \
-          target/deployer-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+        shasum -a 256 target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz > \
+          target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
 
   dist.linux-amd64:
     - task: dist.target
