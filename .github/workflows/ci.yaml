@@ -2,10 +2,14 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
   workflow_call:
+    inputs:
+      distribute:
+        type: boolean
+        default: false
+      no-build-sha:
+        type: boolean
+        default: true
 
 env:
   CACHE_DIR: "${{ github.workspace }}/.cache"
@@ -74,4 +78,50 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: coverage/lcov
-
+  distribute:
+    name: "Create distribution"
+    runs-on: ubuntu-22.04
+    if: ${{ inputs.distribute }}
+    needs:
+      - checks
+      - tests
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Setup Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Task caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CACHE_DIR}}/task
+          key: task-${{ runner.os }}-${{ hashFiles('src/**', 'test/**') }}
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: Setup Deno caching
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: deno-${{ runner.os }}-${{ hashFiles('deno.*', '**/deps.ts') }}
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ inputs.no-build-sha }}" == "true" ]] ; then
+            suffix=""
+          else
+            suffix="+${{ github.sha }}"
+          fi
+          version="$(cat package.json | jq -r '.version')${suffix}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+      - name: Create distribution
+        run: |
+          task distribute VERSION=${{ steps.version.outputs.version }}
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path:
+            target/deployer-*.tar.gz*      
