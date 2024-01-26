@@ -1,8 +1,8 @@
 version: "3"
 
 vars:
-  VERSION: '{{ default "latest" .VERSION }}'
-  PROJECT: '{{ default "o-p-n-deployer" .PROJECT }}'
+  VERSION: '{{default "latest" .VERSION}}'
+  PROJECT: '{{default "o-p-n-deployer" .PROJECT}}'
 
 tasks:
   clean.target:
@@ -11,7 +11,7 @@ tasks:
       vars:
         - TARGET
     cmds:
-      - git clean -dfx target/{{ .TARGET }}
+      - git clean -dfx target/{{.TARGET}}
   clean.all-targets:
     - git clean -dfx target
   clean.cache:
@@ -38,43 +38,43 @@ tasks:
     sources:
       - "src/**"
     generates:
-      - target/{{ .TARGET }}/{{ .PROJECT }}
+      - target/{{.TARGET}}/{{.PROJECT}}
     cmds:
       - task: clean.target
         vars:
-          TARGET: "{{ .TARGET }}"
-      - mkdir -p target/{{ .TARGET }}
+          TARGET: "{{.TARGET}}"
+      - mkdir -p target/{{.TARGET}}
       - |
         deno compile \
           --allow-read --allow-write \
           --allow-env --allow-run --allow-sys \
-          --target {{ .TARGET }} --output target/{{ .TARGET }}/{{ .PROJECT }} \
+          --target {{.TARGET}} --output target/{{.TARGET}}/{{.PROJECT}} \
           ./src/main.ts
 
   compile.local:
     sources:
       - src/**/*.ts
     generates:
-      - target/{{ .PROJECT }}
+      - target/{{.PROJECT}}
     cmds:
       - mkdir -p target
       - |
         deno compile \
         --allow-read --allow-write \
         --allow-env --allow-run --allow-sys \
-        --output target/{{ .PROJECT }} \
+        --output target/{{.PROJECT}} \
         ./src/main.ts
 
   compile.linux-amd64:
     - task: compile.target
       vars:
         TARGET: x86_64-unknown-linux-gnu
-        PROJECT: '{{ .PROJECT }}'
+        PROJECT: '{{.PROJECT}}'
   compile.darwin-arm64:
     - task: compile.target
       vars:
         TARGET: aarch64-apple-darwin
-        PROJECT: '{{ .PROJECT }}'
+        PROJECT: '{{.PROJECT}}'
   compile:
     desc: Compiles all platform binaries
     deps:
@@ -87,21 +87,21 @@ tasks:
       vars:
         - TARGET
     sources:
-      - target/{{ .TARGET }}/{{ .PROJECT }}
+      - target/{{.TARGET}}/{{.PROJECT}}
     generates:
-      - target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz
-      - target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+      - target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz
+      - target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz.sha256
     cmds:
       - task: compile.target
         vars:
-          TARGET: "{{ .TARGET }}"
+          TARGET: "{{.TARGET}}"
       - |
-        tar czf target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz \
-          -C target/{{ .TARGET }} \
-          {{ .PROJECT }}
+        tar czf target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz \
+          -C target/{{.TARGET}} \
+          {{.PROJECT}}
       - |
-        shasum -a 256 target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz > \
-          target/{{ .PROJECT }}-{{ .VERSION }}-{{ .TARGET }}.tar.gz.sha256
+        shasum -a 256 target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz > \
+          target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz.sha256
 
   dist.linux-amd64:
     - task: dist.target
@@ -164,10 +164,10 @@ tasks:
       - task: coverage.report
 
   check.lint:
-    - deno lint {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
+    - deno lint {{default "'**/*.js' '**/*.ts'" .CLI_ARGS}}
   
   check.fmt:
-    - deno fmt --check {{ default "'**/*.js' '**/*.ts'" .CLI_ARGS }}
+    - deno fmt --check {{default "'**/*.js' '**/*.ts'" .CLI_ARGS}}
 
   checks:
     desc: Check coding
