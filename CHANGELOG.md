@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/o-p-n/deployer/compare/v0.1.0...v0.1.1) (2024-01-27)
+
+
+### Fixes
+
+* **ci:** missing explicit artifact name ([#26](https://github.com/o-p-n/deployer/issues/26)) ([26ff719](https://github.com/o-p-n/deployer/commit/26ff719b3de417698dfef6f982746aa58acccb7a))
+
 ## 0.1.0 (2024-01-27)
 
 
