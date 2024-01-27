@@ -3,12 +3,6 @@
 import { Command, HelpCommand } from "cliffy/command/mod.ts";
 import pkg from "../../package.json" with { type: "json" };
 
-export const _internals = {
-  getEnv(key: string, def?: string): string | undefined {
-    return Deno.env.get(key) || def;
-  },
-};
-
 export type GlobalOpts = {
   env: string;
   identityDir: string;
@@ -19,6 +13,11 @@ export function globalCommand(): Command<GlobalOpts> {
     .name(pkg.name)
     .version(pkg.version)
     .description("Tool for deploying resources to outer-planes.net")
+    .globalEnv(
+      "DEPLOYER_IDENTITY_DIR=<identities:file>",
+      "set directory containing identities",
+      { prefix: "DEPLOYER_" }
+    )
     .globalOption(
       "-e, --env <env:string>",
       "the environment to operate on",
@@ -30,7 +29,7 @@ export function globalCommand(): Command<GlobalOpts> {
       "-I, --identity-dir <identities:file>",
       "directory containing identities (public/private keys)",
       {
-        default: _internals.getEnv("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
+        default: Deno.cwd(),
       },
     )
     .command("help", new HelpCommand().noGlobals()).reset()

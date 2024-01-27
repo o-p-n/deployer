@@ -1,22 +1,43 @@
 /** */
 
-import { afterEach, describe, it } from "deno_std/testing/bdd.ts";
+import { afterEach, beforeEach, describe, it } from "deno_std/testing/bdd.ts";
 import { expect, mock } from "../mocked.ts";
 
 import pkg from "../../package.json" with { type: "json" };
-import { _internals, globalCommand } from "../../src/internal/global.ts";
+import { globalCommand } from "../../src/internal/global.ts";
 
 describe("internal/global", () => {
   describe("globalCommand()", () => {
-    let spyGetEnv: mock.Spy | undefined;
+    let origEnvVars: Record<string, string | undefined>;
+    let spyExit: mock.Spy | undefined;
 
-    afterEach(() => {
-      spyGetEnv && !spyGetEnv.restored && spyGetEnv.restore();
+    function captureEnvVar(envs: Record<string, string | undefined>, key: string): Record<string, string | undefined> {
+      envs = {
+        ...envs,
+        [key]: Deno.env.get(key),
+      }
+      Deno.env.delete(key);
+
+      return envs;
+    } 
+    
+    beforeEach(() => {
+      origEnvVars = captureEnvVar(origEnvVars, "DEPLOYER_IDENTITY_DIR");
+
+      spyExit = mock.stub(Deno, "exit");
     });
 
-    function stubGetEnv(value: string) {
-      spyGetEnv = mock.stub(_internals, "getEnv", () => value);
-    }
+    afterEach(() => {
+      spyExit && !spyExit.restored && spyExit.restore();
+      
+      for (const [key, value] of Object.entries(origEnvVars)) {
+        if (value !== undefined) {
+          Deno.env.set(key, value);
+        } else {
+          Deno.env.delete(key);
+        }
+      }
+    });
 
     it("creates with the expected parameters (default)", () => {
       const result = globalCommand();
@@ -29,6 +50,7 @@ describe("internal/global", () => {
       opt = result.getOption("env");
       expect(opt).to.exist();
       expect(opt?.aliases).to.deep.equal(["e"]);
+      expect(opt?.description).to.equal("the environment to operate on");
       expect(opt?.typeDefinition).to.equal("<env:string>");
       expect(opt?.required).to.be.true();
       expect(opt?.global).to.be.true();
@@ -36,37 +58,68 @@ describe("internal/global", () => {
       opt = result.getOption("identity-dir");
       expect(opt).to.exist();
       expect(opt?.aliases).to.deep.equal(["I"]);
+      expect(opt?.description).to.equal("directory containing identities (public/private keys)");
       expect(opt?.typeDefinition).to.equal("<identities:file>");
       expect(opt?.default).to.equal(Deno.cwd());
       expect(opt?.global).to.be.true();
 
-      const cmd = result.getCommand("help");
+      const envvar = result.getEnvVar("DEPLOYER_IDENTITY_DIR");
+      expect(envvar).to.exist();
+      expect(envvar?.name).to.equal("DEPLOYER_IDENTITY_DIR");
+      expect(envvar?.description).to.equal("set directory containing identities")
+      expect(envvar?.prefix).to.equal("DEPLOYER_");
+
+      const cmd  = result.getCommand("help");
       expect(cmd).to.exist();
     });
-    it("creates with the expected parameters (env-var)", () => {
-      const envvar = "/from-env/identities";
-      stubGetEnv(envvar);
 
+    it("parses the required options (no envvar)", async () => {
       const result = globalCommand();
-      expect(result.getName()).to.equal(pkg.name);
-      expect(result.getDescription()).to.equal(
-        "Tool for deploying resources to outer-planes.net",
-      );
+      const args = await result.parse([
+        "--env", "testing",
+      ]);
 
-      let opt;
-      opt = result.getOption("env");
-      expect(opt).to.exist();
-      expect(opt?.aliases).to.deep.equal(["e"]);
-      expect(opt?.typeDefinition).to.equal("<env:string>");
-      expect(opt?.required).to.be.true();
-      expect(opt?.global).to.be.true();
+      expect(args.options).to.deep.equal({
+        env: "testing",
+        identityDir: Deno.cwd(),
+      });
+    });
+    it("parses the required options (with envvar)", async () => {
+      Deno.env.set("DEPLOYER_IDENTITY_DIR", "/from/identities");
+      const result = globalCommand();
+      const args = await result.parse([
+        "--env", "testing",
+      ]);
 
-      opt = result.getOption("identity-dir");
-      expect(opt).to.exist();
-      expect(opt?.aliases).to.deep.equal(["I"]);
-      expect(opt?.typeDefinition).to.equal("<identities:file>");
-      expect(opt?.default).to.equal("/from-env/identities");
-      expect(opt?.global).to.be.true();
+      expect(args.options).to.deep.equal({
+        env: "testing",
+        identityDir: "/from/identities",
+      });
+    });
+
+    it("parses all the options (no envvar)", async () => {
+      const result = globalCommand();
+      const args = await result.parse([
+        "--env", "testing",
+      ]);
+
+      expect(args.options).to.deep.equal({
+        env: "testing",
+        identityDir: Deno.cwd(),
+      });
+    });
+    it("parses the required options (with envvar)", async () => {
+      Deno.env.set("DEPLOYER_IDENTITY_DIR", "/from/identities");
+      const result = globalCommand();
+      const args = await result.parse([
+        "--env", "testing",
+        "--identity-dir", "/devel/project/identities",
+      ]);
+
+      expect(args.options).to.deep.equal({
+        env: "testing",
+        identityDir: "/devel/project/identities",
+      });
     });
   });
 });
