@@ -123,5 +123,6 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
+          name: artifact
           path:
             target/o-p-n-deployer-*.tar.gz*      
