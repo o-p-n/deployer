@@ -16,7 +16,7 @@ export function globalCommand(): Command<GlobalOpts> {
     .globalEnv(
       "DEPLOYER_IDENTITY_DIR=<identities:file>",
       "set directory containing identities",
-      { prefix: "DEPLOYER_" }
+      { prefix: "DEPLOYER_" },
     )
     .globalOption(
       "-e, --env <env:string>",
