@@ -50,9 +50,7 @@ export class Applier {
   }
 
   async applyKustomize(path: string) {
-    const { env } = this.config;
-
-    await $`kubectl --context=${env} apply --wait -k ${path}`
+    await $`kubectl apply --wait -k ${path}`
       .printCommand();
 
     await this.verifyKustomize(path);
