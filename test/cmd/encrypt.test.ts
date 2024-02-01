@@ -15,7 +15,7 @@ describe("cmd/encrypt", () => {
     global = globalCommand();
   });
 
-  describe("encryptCommand", () => {
+  describe("encryptCommand()", () => {
     let spyCreateKeyOp: mock.Spy | undefined;
     let spyEncrypt: mock.Spy | undefined;
 
@@ -65,7 +65,7 @@ describe("cmd/encrypt", () => {
       expect(spyCreateKeyOp).to.have.been.deep.calledWith([
         {
           env: "testing",
-          identityDir: Deno.cwd(),
+          identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
         },
       ]);
       expect(spyEncrypt).to.have.been.deep.calledWith([

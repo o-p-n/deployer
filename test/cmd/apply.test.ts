@@ -64,7 +64,7 @@ describe("cmd/apply", () => {
       expect(spyCreateApply).to.have.been.deep.calledWith([
         {
           env: "testing",
-          identityDir: Deno.cwd(),
+          identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
           bootstrap: false,
         },
       ]);
@@ -82,7 +82,7 @@ describe("cmd/apply", () => {
       expect(spyCreateApply).to.have.been.deep.calledWith([
         {
           env: "testing",
-          identityDir: Deno.cwd(),
+          identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
           bootstrap: true,
         },
       ]);
