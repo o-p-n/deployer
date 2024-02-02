@@ -44,8 +44,7 @@ export class CommandBuilderStubber {
       combined.writeSync(opts.err);
     }
 
-    this.#command = mock.spy(CommandBuilder.prototype,
-      "command");
+    this.#command = mock.spy(CommandBuilder.prototype, "command");
 
     const result = new CommandResult(
       opts.code ?? 0,

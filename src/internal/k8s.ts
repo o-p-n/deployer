@@ -61,7 +61,7 @@ export class Applier {
     if (context) {
       args.unshift(`--context=${context}`);
     }
-    
+
     await new CommandBuilder()
       .command([
         cmd,
