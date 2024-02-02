@@ -17,6 +17,7 @@ export interface CommandBuilderStubberOpts {
 
 export class CommandBuilderStubber {
   #stubber?: mock.Spy;
+  #command?: mock.Spy;
 
   constructor() {
     this.#stubber = undefined;
@@ -24,6 +25,10 @@ export class CommandBuilderStubber {
 
   get stub() {
     return this.#stubber;
+  }
+
+  get command() {
+    return this.#command;
   }
 
   apply(opts: CommandBuilderStubberOpts) {
@@ -38,6 +43,9 @@ export class CommandBuilderStubber {
       combined.grow(opts.err.byteLength);
       combined.writeSync(opts.err);
     }
+
+    this.#command = mock.spy(CommandBuilder.prototype,
+      "command");
 
     const result = new CommandResult(
       opts.code ?? 0,
@@ -55,6 +63,9 @@ export class CommandBuilderStubber {
   restore() {
     this.#stubber && !this.#stubber.restored && this.#stubber.restore();
     this.#stubber = undefined;
+
+    this.#command && !this.#command.restored && this.#command.restore();
+    this.#command = undefined;
   }
 }
 

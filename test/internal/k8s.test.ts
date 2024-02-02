@@ -185,11 +185,41 @@ describe("internal/k8s", () => {
           spyVerifyKustomize.restore();
       });
 
-      it("calls customize for the given path", async () => {
+      it("calls customize for the given path (no context)", async () => {
         const applier = new Applier(opts);
 
         spyCommandBuilder.apply({});
         await applier.applyKustomize("k8s/env/testing");
+        expect(spyCommandBuilder.command).to.have.been.deep.calledWith([
+          [
+            "kubectl",
+            "apply",
+            "--wait",
+            '--kustomize="k8s/env/testing"',
+          ],
+        ]);
+        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+        expect(spyVerifyKustomize).to.have.been.deep.calledWith([
+          "k8s/env/testing",
+        ]);
+      });
+      it("calls customize for the given path (with context)", async () => {
+        const applier = new Applier({
+          ...opts,
+          context: "testing",
+        });
+
+        spyCommandBuilder.apply({});
+        await applier.applyKustomize("k8s/env/testing");
+        expect(spyCommandBuilder.command).to.have.been.deep.calledWith([
+          [
+            "kubectl",
+            "--context=testing",
+            "apply",
+            "--wait",
+            '--kustomize="k8s/env/testing"',
+          ],
+        ]);
         expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
         expect(spyVerifyKustomize).to.have.been.deep.calledWith([
           "k8s/env/testing",

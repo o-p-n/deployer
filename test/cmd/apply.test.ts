@@ -51,9 +51,15 @@ describe("cmd/apply", () => {
       expect(opt?.aliases).to.deep.equal(["b"]);
       expect(opt?.typeDefinition).to.equal("[bootstrap:boolean]");
       expect(opt?.default).to.be.false();
+
+      opt = apply?.getOption("context");
+      expect(opt).to.exist();
+      expect(opt?.aliases).to.deep.equal(["C"]);
+      expect(opt?.typeDefinition).to.equal("<context:string>");
+      expect(opt?.default).to.equal("");
     });
 
-    it("calls the handler on parse (no bootstrapping)", async () => {
+    it("calls the handler on parse", async () => {
       const cmd = applyCommand(global);
       await cmd.parse([
         "apply",
@@ -66,6 +72,7 @@ describe("cmd/apply", () => {
           env: "testing",
           identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
           bootstrap: false,
+          context: "",
         },
       ]);
       expect(spyExecute).to.have.been.called(1);
@@ -84,6 +91,7 @@ describe("cmd/apply", () => {
           env: "testing",
           identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
           bootstrap: true,
+          context: "",
         },
       ]);
       expect(spyExecute).to.have.been.called(1);
@@ -103,6 +111,27 @@ describe("cmd/apply", () => {
           env: "testing",
           identityDir: "/devel/identity",
           bootstrap: false,
+          context: "",
+        },
+      ]);
+      expect(spyExecute).to.have.been.called(1);
+    });
+    it("calls the handler on parse (with context)", async () => {
+      const cmd = applyCommand(global);
+      await cmd.parse([
+        "apply",
+        "--env",
+        "testing",
+        "--context",
+        "testing",
+      ]);
+
+      expect(spyCreateApply).to.have.been.deep.calledWith([
+        {
+          env: "testing",
+          identityDir: Deno.env.get("DEPLOYER_IDENTITY_DIR") || Deno.cwd(),
+          bootstrap: false,
+          context: "testing",
         },
       ]);
       expect(spyExecute).to.have.been.called(1);

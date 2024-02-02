@@ -2,7 +2,7 @@
 
 import { exists, expandGlob } from "deno_std/fs/mod.ts";
 import { join, relative } from "deno_std/path/mod.ts";
-import $ from "dax";
+import { CommandBuilder } from "dax";
 
 import { GlobalOpts } from "./global.ts";
 import { KeyOp } from "./keys.ts";
@@ -18,6 +18,7 @@ export const _internals = {
 
 export interface ApplyOpts extends GlobalOpts {
   bootstrap: unknown;
+  context?: string;
 }
 
 export class Applier {
@@ -50,7 +51,22 @@ export class Applier {
   }
 
   async applyKustomize(path: string) {
-    await $`kubectl apply --wait -k ${path}`
+    const { context } = this.config;
+    const cmd = "kubectl";
+    const args = [
+      "apply",
+      "--wait",
+      `--kustomize="${path}"`,
+    ];
+    if (context) {
+      args.unshift(`--context=${context}`);
+    }
+    
+    await new CommandBuilder()
+      .command([
+        cmd,
+        ...args,
+      ])
       .printCommand();
 
     await this.verifyKustomize(path);
@@ -65,7 +81,8 @@ export class Applier {
       isFile: true,
     });
     if (checkCmdPresent) {
-      await $`${checkCmd}`
+      await new CommandBuilder()
+        .command(checkCmd)
         .printCommand()
         .env({ ENV: env });
     }
