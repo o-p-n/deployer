@@ -21,8 +21,8 @@ environment's custom readiness checks to complete.
 
 ## USAGE
 
-`deployer` has various sub-commands to perform resource management. Using
-`deployer` requires [preparation](#setting-up) to operate successfully.
+`o-p-n-deployer` has various sub-commands to perform resource management. Using
+`o-p-n-deployer` requires [preparation](#setting-up) to operate successfully.
 
 ```
 help     [command]  - Show this help or the help of a sub-command.
@@ -53,7 +53,7 @@ resources are deployed first. If the bootstrap has a `apply-ready.sh` script, it
 will be run after applying the boostrapping to wait and verify the resources are
 completely applied. **NOTE** that `bootstrap`-level secrets are not supported.
 
-If `--context` is specified, the named context is used with `kubectl`.  By
+If `--context` is specified, the named context is used with `kubectl`. By
 default the current context is used.
 
 ### `encrypt` — Protect secrets
@@ -81,21 +81,21 @@ file `secrets.env.sops`.
 
 ### Dependencies
 
-Using `deployer` requires the following to be installed and available in your
-`$PATH`:
+Using `o-p-n-deployer` requires the following to be installed and available in
+your `$PATH`:
 
 - [`kubectl`](https://kubectl.docs.kubernetes.io/) (>= 1.19)
 - [`sops`](https://github.com/getsops/sops) (>= 3.8)
 
 Optionally, the following could be useful (but are not required nor used by
-`deployer`):
+`o-p-n-deployer`):
 
 - [`age`](https://age-encryption.org/) (>= 1.1) (specifically `age-keygen` for
   generating encryption keys)
 
 ### Resource Structure
 
-For components, `deployer` expects [Kustomize](https://kustomize.io/)
+For components, `o-p-n-deployer` expects [Kustomize](https://kustomize.io/)
 directories within following directory structures:
 
 ```
@@ -118,16 +118,16 @@ loads the component's resources. It also contains
 
 ### `kubectl` Assumptions
 
-Using `deployer` expects any connectivity requirements (e.g., SSH forwarding)
-are established and ready before executing `deployer`.  It also assumes the
-current context is appropriate for the specified environment, although the
-`--context` flag can be used to specify a different context.
+Using `o-p-n-deployer` expects any connectivity requirements (e.g., SSH
+forwarding) are established and ready before executing `o-p-n-deployer`. It also
+assumes the current context is appropriate for the specified environment,
+although the `--context` flag can be used to specify a different context.
 
 ### Secrets Management
 
 Any secrets needed by the component can be inline with the other resources,
-encrypted using `sops`. `deployer` will decrypt those secrets before applying
-the kustomization. The secrets are assumed to be encrypted using
+encrypted using `sops`. `o-p-n-deployer` will decrypt those secrets before
+applying the kustomization. The secrets are assumed to be encrypted using
 [`age`](https://age-encryption.org/) keys, stored in a pair of files per
 environment:
 
