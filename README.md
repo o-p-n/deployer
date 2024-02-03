@@ -1,7 +1,6 @@
 # O-P-N INFRASTRUCTURE DEPLOYER
 
-[![GHA CI](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/o-p-n/deployer/graph/badge.svg?token=PAI2ZvxpI0)](https://codecov.io/gh/o-p-n/deployer)
+[![GHA CI](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/o-p-n/deployer/actions/workflows/ci.yaml?query=branch%3Amain) [![codecov](https://codecov.io/gh/o-p-n/deployer/graph/badge.svg?token=PAI2ZvxpI0)](https://codecov.io/gh/o-p-n/deployer)
 
 ---
 
