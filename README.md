@@ -40,6 +40,7 @@ Usage: deployer apply --env <env>
   -e, --env           <env>         - the environment to operate on                          (required)
   -I, --identity-dir  <identities>  - directory containing identities (public/private keys)
   -b, --bootstrap                   - also apply bootstrap
+  -C, --context       <context>     - use kubectl context
 ```
 
 Applies the resources for the environment specified by `--env <env>`. Any
@@ -51,6 +52,9 @@ If `--bootstrap` is specified and a `bootstrap` directory is found, those
 resources are deployed first. If the bootstrap has a `apply-ready.sh` script, it
 will be run after applying the boostrapping to wait and verify the resources are
 completely applied. **NOTE** that `bootstrap`-level secrets are not supported.
+
+If `--context` is specified, the named context is used with `kubectl`.  By
+default the current context is used.
 
 ### `encrypt` — Protect secrets
 
@@ -114,9 +118,10 @@ loads the component's resources. It also contains
 
 ### `kubectl` Assumptions
 
-Using `deployer` requires the `kubectl` configuration file has a context defined
-for each named environment. It also expects any connectivity requirements (e.g.,
-SSH forwarding) are established and ready before executing `deployer`.
+Using `deployer` expects any connectivity requirements (e.g., SSH forwarding)
+are established and ready before executing `deployer`.  It also assumes the
+current context is appropriate for the specified environment, although the
+`--context` flag can be used to specify a different context.
 
 ### Secrets Management
 
