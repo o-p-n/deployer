@@ -190,7 +190,7 @@ describe("internal/keys", () => {
             "k8s/env/testing/secrets.env.sops",
             ctext,
           ]);
-          expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+          expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
         });
         it("encrypts a file 'raw'", async () => {
           const ptext = new TextEncoder().encode("plaintext");
@@ -211,7 +211,7 @@ describe("internal/keys", () => {
             "k8s/env/testing/secrets.env.sops",
             ctext,
           ]);
-          expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+          expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
         });
       });
 
@@ -235,7 +235,7 @@ describe("internal/keys", () => {
             "k8s/env/testing/secrets.env",
             ptext,
           ]);
-          expect(spyCommandBuilder.stub).to.have.been.called(1);
+          expect(spyCommandBuilder.promise).to.have.been.called(1);
         });
         it("decrypts a file 'raw'", async () => {
           const ptext = new TextEncoder().encode("plaintext");
@@ -259,7 +259,7 @@ describe("internal/keys", () => {
             "k8s/env/testing/secrets.env",
             ptext,
           ]);
-          expect(spyCommandBuilder.stub).to.have.been.called(1);
+          expect(spyCommandBuilder.promise).to.have.been.called(1);
         });
       });
     });
