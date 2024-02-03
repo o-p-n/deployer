@@ -16,15 +16,16 @@ export interface CommandBuilderStubberOpts {
 }
 
 export class CommandBuilderStubber {
-  #stubber?: mock.Spy;
+  #promise?: mock.Spy;
   #command?: mock.Spy;
 
   constructor() {
-    this.#stubber = undefined;
+    this.#promise = undefined;
+    this.#command = undefined;
   }
 
-  get stub() {
-    return this.#stubber;
+  get promise() {
+    return this.#promise;
   }
 
   get command() {
@@ -52,7 +53,7 @@ export class CommandBuilderStubber {
       new Buffer(opts.err),
       combined,
     );
-    this.#stubber = mock.stub(
+    this.#promise = mock.stub(
       CommandBuilder.prototype,
       "then",
       (onfulfilled) => Promise.resolve(result).then(onfulfilled),
@@ -60,8 +61,8 @@ export class CommandBuilderStubber {
   }
 
   restore() {
-    this.#stubber && !this.#stubber.restored && this.#stubber.restore();
-    this.#stubber = undefined;
+    this.#promise && !this.#promise.restored && this.#promise.restore();
+    this.#promise = undefined;
 
     this.#command && !this.#command.restored && this.#command.restore();
     this.#command = undefined;

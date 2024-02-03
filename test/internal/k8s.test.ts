@@ -198,7 +198,7 @@ describe("internal/k8s", () => {
             '--kustomize="k8s/env/testing"',
           ],
         ]);
-        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+        expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
         expect(spyVerifyKustomize).to.have.been.deep.calledWith([
           "k8s/env/testing",
         ]);
@@ -220,7 +220,7 @@ describe("internal/k8s", () => {
             '--kustomize="k8s/env/testing"',
           ],
         ]);
-        expect(spyCommandBuilder.stub).to.have.been.deep.called(1);
+        expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
         expect(spyVerifyKustomize).to.have.been.deep.calledWith([
           "k8s/env/testing",
         ]);
@@ -254,7 +254,7 @@ describe("internal/k8s", () => {
           "k8s/env/testing/apply-ready.sh",
           { isFile: true },
         ]);
-        expect(spyCommandBuilder.stub).to.have.been.called();
+        expect(spyCommandBuilder.promise).to.have.been.called();
       });
       it("verify does nothing if missing check command", async () => {
         const applier = new Applier(opts);
@@ -266,7 +266,7 @@ describe("internal/k8s", () => {
           "k8s/env/testing/apply-ready.sh",
           { isFile: true },
         ]);
-        expect(spyCommandBuilder.stub).to.not.have.been.called();
+        expect(spyCommandBuilder.promise).to.not.have.been.called();
       });
     });
 
