@@ -9,6 +9,7 @@ A command-line utility for deploying kubernetes resources for
 resources, decrypting senstive to be included and optionally waiting for that
 environment's custom readiness checks to complete.
 
+- [INSTALLING](#installing)
 - [USAGE](#usage)
   - [`apply` — Apply kustomizations](#apply--apply-kustomizations)
   - [`encrypt` — Protect secrets](#encrypt--protect-secrets)
@@ -17,6 +18,15 @@ environment's custom readiness checks to complete.
   - [Resource Structure](#resource-structure)
   - [`kubectl` Assumptions](#kubectl-assumptions)
   - [Secrets Management](#secrets-management)
+
+## INSTALLING
+
+Install `o-p-n-deployer` for your platform from the GitHub releases and extract, then move to somewhere in your `PATH`:
+
+```
+curl -sL https://https://github.com/o-p-n/deployer/releases/download/v{VERSION}/o-p-n-deployer-{VERSION}-{PLATFORM}.tar.gz | tar xzf -
+mv o-p-n-deployer /usr/local/bin
+```
 
 ## USAGE
 
