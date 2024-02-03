@@ -9,6 +9,7 @@
     "exclude": [".cache/**"]
   },
   "fmt": {
-    "exclude": [".cache/**"]
+    "exclude": [".cache/**", "CHANGELOG.md"],
+    "proseWrap": "preserve"
   }
 }
