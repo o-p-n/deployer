@@ -163,7 +163,7 @@ describe("internal/upgrader", () => {
         expect(result).to.equal(target);
         expect(target.initialized).to.be.true();
         expect(spyFetch).to.have.been.called(1);
-          expect(spyFetch).to.have.been.deep.calledWith([
+        expect(spyFetch).to.have.been.deep.calledWith([
           `https://api.github.com/repos/${pkg.repository}/releases`,
         ]);
       });

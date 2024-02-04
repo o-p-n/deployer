@@ -54,12 +54,14 @@ export interface Asset {
   digest: string;
 }
 
-export function parseAsset(data: z.infer<typeof assetSchema>): Partial<Asset> | undefined {
+export function parseAsset(
+  data: z.infer<typeof assetSchema>,
+): Partial<Asset> | undefined {
   const current: Partial<Asset> = {};
   const { url, name } = data;
   const parts = RE_RELEASE_DIST.exec(name)?.slice(1);
 
-  if (!parts) { 
+  if (!parts) {
     return undefined;
   }
   const key = parts.slice(0, 4).filter((v) => v).join("-");
