@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/o-p-n/deployer/compare/v0.1.1...v0.2.0) (2024-02-03)
+
+
+### Features
+
+* add kubectl --context flag to 'apply' ([#31](https://github.com/o-p-n/deployer/issues/31)) ([442036f](https://github.com/o-p-n/deployer/commit/442036f3a535f9c4739142f176d1a10c1047e536))
+
+
+### Fixes
+
+* **tests:** environment variables not always accounted for ([#30](https://github.com/o-p-n/deployer/issues/30)) ([a716c84](https://github.com/o-p-n/deployer/commit/a716c842bb8e8cd162f3082d37c14c5a6e75eb14))
+
+
+### Housekeeping
+
+* **ci:** validate PR information ([#28](https://github.com/o-p-n/deployer/issues/28)) ([f5a676b](https://github.com/o-p-n/deployer/commit/f5a676b50c8e6077ac5f778db04fc427fe51ce8f))
+* **docs:** update documentation to match latest ([#33](https://github.com/o-p-n/deployer/issues/33)) ([1db079d](https://github.com/o-p-n/deployer/commit/1db079d5d955df185082a6e906b4f6721bbc1490))
+* **tests:** expand CommandBuilder spy capabilities ([#32](https://github.com/o-p-n/deployer/issues/32)) ([9c16606](https://github.com/o-p-n/deployer/commit/9c16606da739164988a3a2d7b085bb4a7652e15f))
+
 ## [0.1.1](https://github.com/o-p-n/deployer/compare/v0.1.0...v0.1.1) (2024-01-27)
 
 
