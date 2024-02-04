@@ -47,6 +47,7 @@ tasks:
       - mkdir -p target/{{.TARGET}}
       - |
         deno compile \
+          --allow-net \
           --allow-read --allow-write \
           --allow-env --allow-run --allow-sys \
           --target {{.TARGET}} --output target/{{.TARGET}}/{{.PROJECT}} \
@@ -62,10 +63,11 @@ tasks:
       - mkdir -p target
       - |
         deno compile \
-        --allow-read --allow-write \
-        --allow-env --allow-run --allow-sys \
-        --output target/{{.PROJECT}} \
-        ./src/main.ts
+          --allow-net \
+          --allow-read --allow-write \
+          --allow-env --allow-run --allow-sys \
+          --output target/{{.PROJECT}} \
+          ./src/main.ts
 
   compile.linux-amd64:
     - task: compile.target
