@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/o-p-n/deployer/compare/v0.2.0...v0.2.1) (2024-02-04)
+
+
+### Housekeeping
+
+* include full name in package ([#34](https://github.com/o-p-n/deployer/issues/34)) ([4df992c](https://github.com/o-p-n/deployer/commit/4df992cdb04b6c0c4af223ed65ef360962cee703))
+* rename to 'o-p-n.deployer' ([#36](https://github.com/o-p-n/deployer/issues/36)) ([e6ee46e](https://github.com/o-p-n/deployer/commit/e6ee46edc3920e78a1e6bfc8e57c51006527399f))
+
 ## [0.2.0](https://github.com/o-p-n/deployer/compare/v0.1.1...v0.2.0) (2024-02-03)
 
 
