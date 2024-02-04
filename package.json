@@ -1,5 +1,6 @@
 {
   "name": "o-p-n.deployer",
+  "repository": "o-p-n/deployer",
   "private": true,
   "version": "0.3.1"
 }
