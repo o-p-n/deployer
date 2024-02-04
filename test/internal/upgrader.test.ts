@@ -203,5 +203,49 @@ describe("internal/upgrader", () => {
         ]);
       });
     });
+
+    describe(".available()", () => {
+      it("throws if not initialized", () => {
+        const target = new Upgrader();
+
+        expect(() => {
+          target.available("latest");
+        }).to.throw();
+      });
+
+      describe("initalized", () => {
+        let target: Upgrader;
+
+        beforeEach(async () => {
+          target = new Upgrader();
+          await target.init();
+        });
+
+        it("returns nothing if 'latest'", () => {
+          const result = target.available("latest");
+          expect(result).to.be.empty();
+        });
+        it("returns all versions", () => {
+          const result = target.available("0.0.1");
+          expect(result).to.deep.equal([
+            "0.2.1",
+            "0.2.0",
+            "0.1.1",
+            "0.1.0",
+          ]);
+        });
+        it("returns only upgradable versions", () => {
+          const result = target.available("0.1.2");
+          expect(result).to.deep.equal([
+            "0.2.1",
+            "0.2.0",
+          ]);
+        });
+        it("returns empty if current is most available", () => {
+          const result = target.available("0.2.1");
+          expect(result).to.be.empty();
+        });
+      });
+    });
   });
 });

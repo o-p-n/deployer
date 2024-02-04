@@ -1,6 +1,7 @@
 /** */
 
 import { z } from "zod";
+import * as semver from "deno_std/semver/mod.ts";
 import pkg from "../../package.json" with { type: "json" };
 
 export const _internals = {
@@ -118,5 +119,27 @@ export class Upgrader {
     }
 
     return Object.keys(this.#releases!);
+  }
+
+  available(current = pkg.version): string[] {
+    if (!this.initialized) {
+      throw new Error("not initialize");
+    }
+
+    if (current === "latest") {
+      return [];
+    }
+
+    const have = semver.parse(current);
+    const versions = this.versions.map((v) => semver.parse(v));
+    const avail: string[] = [];
+    for (const v of versions) {
+      if (semver.greaterOrEqual(have, v)) {
+        continue;
+      }
+      avail.push(semver.format(v));
+    }
+
+    return avail;
   }
 }
