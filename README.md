@@ -18,16 +18,16 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
 
 ## INSTALLING
 
-Install `o-p-n-deployer` for your platform from the GitHub releases and extract, then move to somewhere in your `PATH`:
+Install `o-p-n.deployer` for your platform from the GitHub releases and extract, then move to somewhere in your `PATH`:
 
 ```
-curl -sL https://https://github.com/o-p-n/deployer/releases/download/v{VERSION}/o-p-n-deployer-{VERSION}-{PLATFORM}.tar.gz | tar xzf -
-mv o-p-n-deployer /usr/local/bin
+curl -sL https://https://github.com/o-p-n/deployer/releases/download/v{VERSION}/o-p-n.deployer-{VERSION}-{PLATFORM}.tar.gz | tar xzf -
+mv o-p-n.deployer /usr/local/bin
 ```
 
 ## USAGE
 
-`o-p-n-deployer` has various sub-commands to perform resource management. Using `o-p-n-deployer` requires [preparation](#setting-up) to operate successfully.
+`o-p-n.deployer` has various sub-commands to perform resource management. Using `o-p-n.deployer` requires [preparation](#setting-up) to operate successfully.
 
 ```
 help     [command]  - Show this help or the help of a sub-command.
@@ -74,18 +74,18 @@ The resulting encrypted file retains the same name as the original file plus the
 
 ### Dependencies
 
-Using `o-p-n-deployer` requires the following to be installed and available in your `$PATH`:
+Using `o-p-n.deployer` requires the following to be installed and available in your `$PATH`:
 
 - [`kubectl`](https://kubectl.docs.kubernetes.io/) (>= 1.19)
 - [`sops`](https://github.com/getsops/sops) (>= 3.8)
 
-Optionally, the following could be useful (but are not required nor used by `o-p-n-deployer`):
+Optionally, the following could be useful (but are not required nor used by `o-p-n.deployer`):
 
 - [`age`](https://age-encryption.org/) (>= 1.1) (specifically `age-keygen` for generating encryption keys)
 
 ### Resource Structure
 
-For components, `o-p-n-deployer` expects [Kustomize](https://kustomize.io/) directories within following directory structures:
+For components, `o-p-n.deployer` expects [Kustomize](https://kustomize.io/) directories within following directory structures:
 
 ```
 < app/component >
@@ -106,11 +106,11 @@ For a named environment, its directory contains a `kustomization.yaml` that load
 
 ### `kubectl` Assumptions
 
-Using `o-p-n-deployer` expects any connectivity requirements (e.g., SSH forwarding) are established and ready before executing `o-p-n-deployer`. It also assumes the current context is appropriate for the specified environment, although the `--context` flag can be used to specify a different context.
+Using `o-p-n.deployer` expects any connectivity requirements (e.g., SSH forwarding) are established and ready before executing `o-p-n.deployer`. It also assumes the current context is appropriate for the specified environment, although the `--context` flag can be used to specify a different context.
 
 ### Secrets Management
 
-Any secrets needed by the component can be inline with the other resources, encrypted using `sops`. `o-p-n-deployer` will decrypt those secrets before applying the kustomization. The secrets are assumed to be encrypted using [`age`](https://age-encryption.org/) keys, stored in a pair of files per environment:
+Any secrets needed by the component can be inline with the other resources, encrypted using `sops`. `o-p-n.deployer` will decrypt those secrets before applying the kustomization. The secrets are assumed to be encrypted using [`age`](https://age-encryption.org/) keys, stored in a pair of files per environment:
 
 - `{env}.key` — Age private key to decrypt `{env}`'s secrets
 - `{env}.key.pub` — Age public key to encrypt `{env}`'s secrets
