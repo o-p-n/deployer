@@ -3,7 +3,7 @@
 /.task
 /coverage
 /target
-o-p-n-deployer
+o-p-n.deployer
 
 # ignore sensitive files
 **/*.key

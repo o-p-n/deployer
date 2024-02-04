@@ -125,4 +125,4 @@ jobs:
         with:
           name: artifact
           path:
-            target/o-p-n-deployer-*.tar.gz*      
+            target/o-p-n.deployer-*.tar.gz*      

@@ -2,7 +2,7 @@ version: "3"
 
 vars:
   VERSION: '{{default "latest" .VERSION}}'
-  PROJECT: '{{default "o-p-n-deployer" .PROJECT}}'
+  PROJECT: '{{default "o-p-n.deployer" .PROJECT}}'
 
 tasks:
   clean.target:
