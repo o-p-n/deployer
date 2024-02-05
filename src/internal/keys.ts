@@ -1,6 +1,6 @@
 /** */
 
-import { join, relative, resolve } from "deno_std/path/mod.ts";
+import { extname, join, relative, resolve } from "deno_std/path/mod.ts";
 import $ from "dax";
 
 import { GlobalOpts } from "./global.ts";
@@ -46,7 +46,7 @@ export class KeyOp {
     const key = `${env}/public`;
     let value = this.#cache.get(key);
     if (!value) {
-      console.error(`loading ${env} public key`);
+      console.error(`🔑 loading ${env} public key`);
       value = await _internals.loadKey(this.config, false);
       this.#cache.set(key, value);
     }
@@ -68,14 +68,11 @@ export class KeyOp {
     return value;
   }
 
-  async encrypt(file: string, direct = false) {
+  async encrypt(file: string) {
     const { env } = this.config;
     const pubKey = await this.getPublicKey();
 
-    const srcPath = relative(
-      Deno.cwd(),
-      direct ? file : _internals.resolve("k8s", "env", env, file),
-    );
+    const srcPath = relative(Deno.cwd(), file);
     const dstPath = `${srcPath}.sops`;
     console.log(`🔒 encrypting ${srcPath} for ${env}`);
 
@@ -92,16 +89,14 @@ export class KeyOp {
     return dstPath;
   }
 
-  async decrypt(file: string, direct = false) {
+  async decrypt(file: string) {
     const { env } = this.config;
     const prvKey = await this.getPrivateKey();
 
-    const dstPath = relative(
-      Deno.cwd(),
-      direct
-        ? file.substring(0, file.length - 5)
-        : _internals.resolve("k8s", "env", env, file),
-    );
+    if (extname(file) === ".sops") {
+      file = file.substring(0, file.length - 5);
+    }
+    const dstPath = relative(Deno.cwd(), file);
     const srcPath = `${dstPath}.sops`;
     console.log(`🔓 decrypting ${dstPath} for ${env}`);
 

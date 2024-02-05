@@ -115,7 +115,7 @@ describe("internal/keys", () => {
       });
     });
 
-    describe(".encrypt()", () => {
+    describe(".encrypt()/.decrypt()", () => {
       const config = {
         env: "testing",
         identityDir: "/devel/identity",
@@ -180,35 +180,14 @@ describe("internal/keys", () => {
             out: ctext,
           });
           const result = await op.encrypt("secrets.env");
-          expect(result).to.equal("k8s/env/testing/secrets.env.sops");
+          expect(result).to.equal("secrets.env.sops");
 
           expect(spyPublicKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env",
+            "secrets.env",
           ]);
           expect(spyWriteFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env.sops",
-            ctext,
-          ]);
-          expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
-        });
-        it("encrypts a file 'raw'", async () => {
-          const ptext = new TextEncoder().encode("plaintext");
-          const ctext = new TextEncoder().encode("ciphertext");
-
-          stubReadFile(ptext);
-          spyCommandBuilder.apply({
-            out: ctext,
-          });
-          const result = await op.encrypt("k8s/env/testing/secrets.env", true);
-          expect(result).to.equal("k8s/env/testing/secrets.env.sops");
-
-          expect(spyPublicKey).to.have.been.deep.calledWith([]);
-          expect(spyReadFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env",
-          ]);
-          expect(spyWriteFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env.sops",
+            "secrets.env.sops",
             ctext,
           ]);
           expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
@@ -216,7 +195,7 @@ describe("internal/keys", () => {
       });
 
       describe("decrypting", () => {
-        it("decrypts a file", async () => {
+        it("decrypts a file (assuming sops)", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
 
@@ -225,19 +204,19 @@ describe("internal/keys", () => {
             out: ptext,
           });
           const result = await op.decrypt("secrets.env");
-          expect(result).to.equal("k8s/env/testing/secrets.env");
+          expect(result).to.equal("secrets.env");
 
           expect(spyPrivateKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env.sops",
+            "secrets.env.sops",
           ]);
           expect(spyWriteFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env",
+            "secrets.env",
             ptext,
           ]);
           expect(spyCommandBuilder.promise).to.have.been.called(1);
         });
-        it("decrypts a file 'raw'", async () => {
+        it("decrypts a file (extractin sops)", async () => {
           const ptext = new TextEncoder().encode("plaintext");
           const ctext = new TextEncoder().encode("ciphertext");
 
@@ -245,18 +224,15 @@ describe("internal/keys", () => {
           spyCommandBuilder.apply({
             out: ptext,
           });
-          const result = await op.decrypt(
-            "k8s/env/testing/secrets.env.sops",
-            true,
-          );
-          expect(result).to.equal("k8s/env/testing/secrets.env");
+          const result = await op.decrypt("secrets.env.sops");
+          expect(result).to.equal("secrets.env");
 
           expect(spyPrivateKey).to.have.been.deep.calledWith([]);
           expect(spyReadFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env.sops",
+            "secrets.env.sops",
           ]);
           expect(spyWriteFile).to.have.been.deep.calledWith([
-            "k8s/env/testing/secrets.env",
+            "secrets.env",
             ptext,
           ]);
           expect(spyCommandBuilder.promise).to.have.been.called(1);
