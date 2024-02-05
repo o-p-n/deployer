@@ -106,7 +106,6 @@ describe("internal/k8s", () => {
 
         expect(spyKeyOpDecrypt).to.have.been.deep.calledWith([
           "k8s/env/testing/secrets.env.sops",
-          true,
         ]);
 
         await applier.cleanup();
@@ -132,15 +131,12 @@ describe("internal/k8s", () => {
 
         expect(spyKeyOpDecrypt).to.have.been.deep.calledWith([
           "k8s/env/testing/secrets.env.sops",
-          true,
         ]);
         expect(spyKeyOpDecrypt).to.have.been.deep.calledWith([
           "k8s/env/testing/private.key.sops",
-          true,
         ]);
         expect(spyKeyOpDecrypt).to.have.been.deep.calledWith([
           "k8s/env/testing/privacy.txt.sops",
-          true,
         ]);
 
         await applier.cleanup();

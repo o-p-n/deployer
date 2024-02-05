@@ -43,7 +43,7 @@ export class Applier {
     const decrypted: string[] = [];
     for await (const entry of _internals.expandGlob(`${base}\/**\/*.sops`)) {
       const path = _internals.relative(_internals.cwd(), entry.path);
-      const dst = await this.#key.decrypt(path, true);
+      const dst = await this.#key.decrypt(path);
       decrypted.push(dst);
     }
 
