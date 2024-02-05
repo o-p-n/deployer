@@ -46,7 +46,7 @@ export class KeyOp {
     const key = `${env}/public`;
     let value = this.#cache.get(key);
     if (!value) {
-      console.error(`loading ${env} public key`);
+      console.error(`🔑 loading ${env} public key`);
       value = await _internals.loadKey(this.config, false);
       this.#cache.set(key, value);
     }
