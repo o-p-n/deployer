@@ -1,6 +1,6 @@
 /** */
 
-import { join, relative, resolve, extname } from "deno_std/path/mod.ts";
+import { extname, join, relative, resolve } from "deno_std/path/mod.ts";
 import $ from "dax";
 
 import { GlobalOpts } from "./global.ts";
