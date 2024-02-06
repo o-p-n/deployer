@@ -191,7 +191,8 @@ describe("internal/k8s", () => {
             "kubectl",
             "apply",
             "--wait",
-            '--kustomize="k8s/env/testing"',
+            "--kustomize",
+            "k8s/env/testing",
           ],
         ]);
         expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
@@ -210,10 +211,12 @@ describe("internal/k8s", () => {
         expect(spyCommandBuilder.command).to.have.been.deep.calledWith([
           [
             "kubectl",
-            "--context=testing",
+            "--context",
+            "testing",
             "apply",
             "--wait",
-            '--kustomize="k8s/env/testing"',
+            "--kustomize",
+            "k8s/env/testing",
           ],
         ]);
         expect(spyCommandBuilder.promise).to.have.been.deep.called(1);
