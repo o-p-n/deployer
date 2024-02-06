@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/o-p-n/deployer/compare/v0.2.1...v0.3.0) (2024-02-06)
+
+
+### Features
+
+* always use relatives paths for encrypt/decrypt ([#38](https://github.com/o-p-n/deployer/issues/38)) ([4fc79c5](https://github.com/o-p-n/deployer/commit/4fc79c5c9216bc58e085e6198c285a7683f44bab))
+
+
+### Fixes
+
+* invalid paths used in kubectl ([#40](https://github.com/o-p-n/deployer/issues/40)) ([cd9af3c](https://github.com/o-p-n/deployer/commit/cd9af3c854b773520452bce647cecbc8286f0755))
+
 ## [0.2.1](https://github.com/o-p-n/deployer/compare/v0.2.0...v0.2.1) (2024-02-04)
 
 
