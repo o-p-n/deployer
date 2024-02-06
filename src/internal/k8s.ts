@@ -56,10 +56,11 @@ export class Applier {
     const args = [
       "apply",
       "--wait",
-      `--kustomize="${path}"`,
+      "--kustomize",
+      path,
     ];
     if (context) {
-      args.unshift(`--context=${context}`);
+      args.unshift("--context", context);
     }
 
     await new CommandBuilder()
