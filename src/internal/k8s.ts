@@ -82,6 +82,7 @@ export class Applier {
       isFile: true,
     });
     if (checkCmdPresent) {
+      console.log("⏳ verifying ...");
       await new CommandBuilder()
         .command(checkCmd)
         .printCommand()
@@ -91,7 +92,7 @@ export class Applier {
 
   async cleanup() {
     for (const path of this.#dirty) {
-      console.log(`deleting ${path}`);
+      console.log(`♻️ deleting ${path}`);
       await _internals.remove(path);
     }
     this.#dirty = [];
@@ -106,7 +107,7 @@ export class Applier {
       isReadable: true,
     });
     if (!doit) {
-      console.log(`no resources for ${env}!`);
+      console.log(`ℹ️ no resources for ${env}!`);
       // TODO: error?!
       return;
     }
@@ -122,12 +123,12 @@ export class Applier {
           isReadable: true,
         });
       if (doBootstrap) {
-        console.log("apply bootstrap");
+        console.log("🔄 apply bootstrap");
         await this.applyKustomize("k8s/bootstrap");
       }
 
       // apply environment
-      console.log(`apply ${env}`);
+      console.log(`🔄 apply ${env}`);
       await this.applyKustomize(`k8s/env/${env}`);
     } finally {
       // clean everything up
