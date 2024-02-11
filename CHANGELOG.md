@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/o-p-n/deployer/compare/v0.3.0...v0.3.1) (2024-02-11)
+
+
+### Housekeeping
+
+* more log emojis ([#43](https://github.com/o-p-n/deployer/issues/43)) ([f22adcd](https://github.com/o-p-n/deployer/commit/f22adcd33185e5e9af52198604d70163b5318340))
+* upgrade dax to 0.39.1 ([#41](https://github.com/o-p-n/deployer/issues/41)) ([a855491](https://github.com/o-p-n/deployer/commit/a85549124476fb3414a438b5cda83fd2a1ba6073))
+
 ## [0.3.0](https://github.com/o-p-n/deployer/compare/v0.2.1...v0.3.0) (2024-02-06)
 
 
