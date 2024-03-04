@@ -72,6 +72,11 @@ tasks:
       vars:
         TARGET: x86_64-unknown-linux-gnu
         PROJECT: '{{.PROJECT}}'
+  compile.linux-arm64:
+    - task: compile.target
+      vars:
+        TARGET: aarch64-unknown-linux-gnu
+        PROJECT: '{{.PROJECT}}'
   compile.darwin-arm64:
     - task: compile.target
       vars:
@@ -81,6 +86,7 @@ tasks:
     desc: Compiles all platform binaries
     deps:
       - compile.linux-amd64
+      - compile.linux-arm64
       - compile.darwin-arm64
       - compile.local
 
@@ -109,6 +115,10 @@ tasks:
     - task: dist.target
       vars:
         TARGET: x86_64-unknown-linux-gnu
+  dist.linux-arm64:
+    - task: dist.target
+      vars:
+        TARGET: aarch64-unknown-linux-gnu
   dist.darwin-arm64:
     - task: dist.target
       vars:
@@ -117,6 +127,7 @@ tasks:
     desc: Package binaries for distribution
     deps:
       - dist.linux-amd64
+      - dist.linux-arm64
       - dist.darwin-arm64
 
   test:

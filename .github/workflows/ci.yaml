@@ -15,7 +15,7 @@ env:
   CACHE_DIR: "${{ github.workspace }}/.cache"
   TASK_TEMP_DIR: "${{ github.workspace }}/.cache/task"
   DENO_DIR: "${{ github.workspace }}/.cache/deno"
-  DENO_VERSION: 1.40.1
+  DENO_VERSION: 1.41.1
 
 jobs:
   checks:
