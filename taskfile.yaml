@@ -108,8 +108,8 @@ tasks:
           -C target/{{.TARGET}} \
           {{.PROJECT}}
       - |
-        shasum -a 256 target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz > \
-          target/{{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz.sha256
+        cd target && shasum -a 256 {{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz > \
+          {{.PROJECT}}-{{.VERSION}}-{{.TARGET}}.tar.gz.sha256
 
   dist.linux-amd64:
     - task: dist.target
