@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/o-p-n/deployer/compare/v0.3.1...v0.4.0) (2024-03-22)
+
+
+### Features
+
+* compile linux/arm64 ([#44](https://github.com/o-p-n/deployer/issues/44)) ([5457571](https://github.com/o-p-n/deployer/commit/54575716df2508bb096d74078e828b30219519f6))
+
+
+### Housekeeping
+
+* update documentation with unsafe commands ([#46](https://github.com/o-p-n/deployer/issues/46)) ([33236bb](https://github.com/o-p-n/deployer/commit/33236bbd1db59d7e47c1afcb8a91db6f894a7258))
+
 ## [0.3.1](https://github.com/o-p-n/deployer/compare/v0.3.0...v0.3.1) (2024-02-11)
 
 
