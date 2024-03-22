@@ -10,6 +10,9 @@ A command-line utility for deploying kubernetes resources for [outer-planes.net]
 - [USAGE](#usage)
   - [`apply` — Apply kustomizations](#apply--apply-kustomizations)
   - [`encrypt` — Protect secrets](#encrypt--protect-secrets)
+- [UNSAFE USAGE](#unsafe-usage)
+  - [`decrypt` — Unwrap secrets](#decrypt--unwrap-secrets)
+  - [`render` — Render kustomization](#render--render-kustomization)
 - [SETTING UP](#setting-up)
   - [Dependencies](#dependencies)
   - [Resource Structure](#resource-structure)
@@ -39,7 +42,7 @@ decrypt  <file>     - decrypts a data file for the given environment
 ### `apply` — Apply kustomizations
 
 ```
-Usage: deployer apply --env <env>
+Usage: o-p-n.deployer apply --env <env>
 
   -h, --help                        - Show this help.
   -e, --env           <env>         - the environment to operate on                          (required)
@@ -57,7 +60,7 @@ If `--context` is specified, the named context is used with `kubectl`. By defaul
 ### `encrypt` — Protect secrets
 
 ```
-Usage: deployer encrypt <file> --env <env>
+Usage: o-p-n.deployer encrypt <file> --env <env>
 
   -h, --help                        - Show this help.
   -e, --env           <env>         - the environment to operate on                          (required)
@@ -69,6 +72,28 @@ Encrypts the given data file for the given environment. The data file is assumed
 The file is encrypted with the public key for the given environment (e.g., the public key `local.key.pub` for `local`).
 
 The resulting encrypted file retains the same name as the original file plus the extension `.sops` appended; e.g., encrypting `secrets.env` results in the output file `secrets.env.sops`.
+
+## UNSAFE USAGE
+
+The following commands are considered unsafe; they can potentially leak sensitive information (e.g., API tokens).
+
+### `decrypt` — Unwrap secrets
+
+```
+Usage: o-p-n.deployer decrypt <file> --env <env>
+  -h, --help                        - Show this help.
+  -e, --env           <env>         - the environment to operate on                          (required)
+  -I, --identity-dir  <identities>  - directory containing identities (public/private keys)
+```
+
+Decrypts the given protected data file for the given environment.  The protected data faile is assumed to be located in the environment-specific directory; e.g., the file `secrets.env.sops` for the `local` environment exists in `k8s/env/local/secrets.env.sops`.
+
+The file is decrypted with the private key for the given environment (e.g, the private key `local.key` for `local`).
+
+The resulting _decrypted_ file retains the same name as the original file minus the extension `.sops`; e.g., decrypting `secrets.env.sops` results in the output file `secrets.env`.
+
+### `render` — Render kustomization
+
 
 ## SETTING UP
 
