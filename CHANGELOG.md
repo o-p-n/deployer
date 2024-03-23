@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/o-p-n/deployer/compare/v0.4.0...v0.4.1) (2024-03-22)
+
+
+### Fixes
+
+* checksum has incorrect path for artifact ([#47](https://github.com/o-p-n/deployer/issues/47)) ([0824905](https://github.com/o-p-n/deployer/commit/08249054557b94dce4151bdf2dce62fcd6220b00))
+
 ## [0.4.0](https://github.com/o-p-n/deployer/compare/v0.3.1...v0.4.0) (2024-03-22)
 
 
